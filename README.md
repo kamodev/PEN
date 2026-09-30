@@ -24,6 +24,10 @@ A classic WordPress theme for **preparednesseducation.network**. It is built aro
 | Footer with about text, social icons, three widget columns, disclaimer and legal menu | Customize → Footer / Social Links, Widgets |
 | Brand colors | Customize → Brand Colors |
 
+## Stylesheets
+
+`style.css` holds only the theme header. The styles are split by area in `assets/css/` and load in this order: `tokens`, `base`, `buttons`, `header`, `hero`, `cards`, `schedule`, `sections`, `content`, `footer`, `wordpress`. Brand colors from the Customizer override `tokens.css`. To add or reorder parts, filter `pen_style_parts`.
+
 ## Class fields
 
 Each class has these fields: start date, end date, time, duration, location, price, capacity, seats left, skill level, registration URL, what to bring, prerequisites and instructors. Point **Registration URL** at a WooCommerce product, a booking tool or a form. If you leave it empty, the Register button links to the class page. When seats left is set to `0`, the class shows as sold out.

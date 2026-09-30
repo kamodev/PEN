@@ -75,7 +75,17 @@ function pen_setup() {
 		)
 	);
 
-	add_editor_style( array( pen_fonts_url(), 'style.css' ) );
+	add_editor_style(
+		array_merge(
+			array( pen_fonts_url() ),
+			array_map(
+				function ( $part ) {
+					return 'assets/css/' . $part . '.css';
+				},
+				array( 'tokens', 'base', 'buttons', 'content', 'wordpress' )
+			)
+		)
+	);
 }
 add_action( 'after_setup_theme', 'pen_setup' );
 
@@ -132,12 +142,38 @@ function pen_widgets_init() {
 add_action( 'widgets_init', 'pen_widgets_init' );
 
 /**
+ * Stylesheet parts in assets/css/, in load order.
+ *
+ * @return string[]
+ */
+function pen_style_parts() {
+	return apply_filters(
+		'pen_style_parts',
+		array( 'tokens', 'base', 'buttons', 'header', 'hero', 'cards', 'schedule', 'sections', 'content', 'footer', 'wordpress' )
+	);
+}
+
+/**
  * Scripts and styles.
  */
 function pen_scripts() {
 	wp_enqueue_style( 'pen-fonts', pen_fonts_url(), array(), null );
-	wp_enqueue_style( 'pen-style', get_stylesheet_uri(), array( 'pen-fonts' ), PEN_VERSION );
-	wp_add_inline_style( 'pen-style', pen_customizer_css() );
+
+	// Each part depends on the previous one so they print in order.
+	$previous = 'pen-fonts';
+	foreach ( pen_style_parts() as $part ) {
+		$handle = 'pen-' . $part;
+		wp_enqueue_style( $handle, PEN_URI . '/assets/css/' . $part . '.css', array( $previous ), PEN_VERSION );
+		$previous = $handle;
+	}
+
+	// Customizer colors override the tokens.
+	wp_add_inline_style( 'pen-tokens', pen_customizer_css() );
+
+	// Child themes' style.css loads after the parent's parts.
+	if ( is_child_theme() ) {
+		wp_enqueue_style( 'pen-child', get_stylesheet_uri(), array( $previous ), wp_get_theme()->get( 'Version' ) );
+	}
 
 	wp_enqueue_script( 'pen-main', PEN_URI . '/assets/js/main.js', array(), PEN_VERSION, true );
 

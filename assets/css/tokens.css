@@ -1,0 +1,35 @@
+/**
+ * Design tokens: colors, fonts, spacing. Customizer colors override these.
+ *
+ * @package PEN
+ */
+
+/* ==========================================================================
+   Tokens
+   ========================================================================== */
+:root {
+	--pen-bg: #f4f2ec;
+	--pen-surface: #ffffff;
+	--pen-surface-alt: #e9e6dc;
+	--pen-ink: #1b1d1a;
+	--pen-ink-soft: #4a4d45;
+	--pen-dark: #16181a;
+	--pen-dark-2: #22261f;
+	--pen-olive: #4b5320;
+	--pen-olive-2: #5f6a2a;
+	--pen-accent: #e0621b;
+	--pen-accent-ink: #ffffff;
+	--pen-sand: #c8b88a;
+	--pen-border: #d6d1c2;
+	--pen-success: #3f7d3a;
+	--pen-danger: #b3261e;
+
+	--pen-font-head: "Oswald", "Barlow Condensed", "Arial Narrow", sans-serif;
+	--pen-font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+	--pen-radius: 4px;
+	--pen-shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 8px 24px rgba(0, 0, 0, .08);
+	--pen-max: 1240px;
+	--pen-gutter: clamp(16px, 4vw, 32px);
+	--pen-section: clamp(56px, 8vw, 104px);
+}

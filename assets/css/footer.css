@@ -1,0 +1,44 @@
+/**
+ * Site footer and back-to-top button.
+ *
+ * @package PEN
+ */
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+.pen-footer { background: var(--pen-dark); color: #b9b6ab; font-size: .95rem; }
+.pen-footer a { color: #e3e0d6; text-decoration: none; }
+.pen-footer a:hover { color: var(--pen-accent); }
+.pen-footer__top { padding: clamp(48px, 6vw, 80px) 0 2.5rem; }
+.pen-footer__grid { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 2.5rem; }
+@media (max-width: 900px) { .pen-footer__grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .pen-footer__grid { grid-template-columns: 1fr; } }
+.pen-footer .widget-title, .pen-footer h2.pen-footer__heading {
+	color: #fff; font-size: 1rem; letter-spacing: .14em; margin-bottom: 1rem;
+}
+.pen-footer ul { list-style: none; padding: 0; margin: 0; }
+.pen-footer li { margin-bottom: .5rem; }
+.pen-footer__about p { max-width: 360px; }
+.pen-social { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.25rem; }
+.pen-social a {
+	display: grid; place-items: center; width: 40px; height: 40px;
+	border: 1px solid rgba(255,255,255,.18); border-radius: 50%; color: #fff;
+}
+.pen-social a:hover { background: var(--pen-accent); border-color: var(--pen-accent); color: #fff; }
+.pen-social svg { width: 18px; height: 18px; }
+.pen-footer__disclaimer { font-size: .8rem; color: #8f8c82; border-top: 1px solid rgba(255,255,255,.08); padding: 1.25rem 0; }
+.pen-footer__bottom { border-top: 1px solid rgba(255,255,255,.08); padding: 1.25rem 0; font-size: .85rem; }
+.pen-footer__bottom .pen-container { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; }
+.pen-footer__bottom ul { display: flex; flex-wrap: wrap; gap: 1.25rem; }
+.pen-footer__bottom li { margin: 0; }
+
+/* Back to top */
+.pen-to-top {
+	position: fixed; right: 20px; bottom: 20px; z-index: 90;
+	width: 46px; height: 46px; display: grid; place-items: center;
+	background: var(--pen-accent); color: #fff; border: 0; border-radius: var(--pen-radius); cursor: pointer;
+	opacity: 0; visibility: hidden; transform: translateY(10px); transition: .2s;
+}
+.pen-to-top.is-visible { opacity: 1; visibility: visible; transform: none; }
+.pen-to-top svg { width: 20px; height: 20px; }

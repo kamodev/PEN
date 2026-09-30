@@ -1,0 +1,61 @@
+/**
+ * Grids, cards, placeholders and training-track tiles.
+ *
+ * @package PEN
+ */
+
+/* ==========================================================================
+   Grids & cards
+   ========================================================================== */
+.pen-grid { display: grid; gap: 1.5rem; }
+.pen-grid--2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
+.pen-grid--3 { grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+.pen-grid--4 { grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); }
+
+.pen-card {
+	display: flex; flex-direction: column;
+	background: var(--pen-surface); color: var(--pen-ink);
+	border: 1px solid var(--pen-border); border-radius: var(--pen-radius);
+	overflow: hidden; box-shadow: var(--pen-shadow);
+	transition: transform .15s, box-shadow .15s;
+}
+.pen-card:hover { transform: translateY(-3px); box-shadow: 0 2px 4px rgba(0,0,0,.08), 0 16px 32px rgba(0,0,0,.12); }
+.pen-card__media { position: relative; aspect-ratio: 16 / 10; background: var(--pen-dark-2); overflow: hidden; }
+.pen-card__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pen-placeholder {
+	display: grid; place-items: center; width: 100%; height: 100%; min-height: 220px; aspect-ratio: inherit;
+	background: repeating-linear-gradient(135deg, var(--pen-dark-2) 0 14px, #2a2f26 14px 28px);
+	color: var(--pen-sand);
+}
+.pen-placeholder svg { width: 56px; height: 56px; opacity: .7; }
+.pen-split__media .pen-placeholder { aspect-ratio: 4 / 3; border-radius: var(--pen-radius); }
+.pen-card__badge {
+	position: absolute; top: 12px; left: 12px;
+	background: var(--pen-accent); color: #fff; padding: .25rem .6rem;
+	font-family: var(--pen-font-head); font-size: .75rem; letter-spacing: .12em; text-transform: uppercase;
+}
+.pen-card__body { display: flex; flex-direction: column; flex: 1; padding: 1.4rem; }
+.pen-card__title { font-size: 1.3rem; margin-bottom: .5rem; }
+.pen-card__title a { color: inherit; text-decoration: none; }
+.pen-card__title a:hover { color: var(--pen-accent); }
+.pen-card__meta { font-size: .85rem; color: var(--pen-ink-soft); margin-bottom: .75rem; }
+.pen-card__excerpt { color: var(--pen-ink-soft); font-size: .98rem; }
+.pen-card__foot { margin-top: auto; padding-top: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+
+/* Training tracks (pillars) */
+.pen-track {
+	position: relative; display: flex; flex-direction: column; justify-content: flex-end;
+	min-height: 300px; padding: 1.75rem; color: #fff; text-decoration: none;
+	background: var(--pen-dark-2) center / cover no-repeat; border-radius: var(--pen-radius); overflow: hidden; isolation: isolate;
+}
+.pen-track::before {
+	content: ""; position: absolute; inset: 0; z-index: -1;
+	background: linear-gradient(180deg, rgba(0,0,0,.1) 20%, rgba(0,0,0,.85) 100%);
+	transition: background .2s;
+}
+.pen-track:hover { color: #fff; }
+.pen-track:hover::before { background: linear-gradient(180deg, rgba(75,83,32,.35) 0%, rgba(0,0,0,.9) 100%); }
+.pen-track__icon { width: 44px; height: 44px; color: var(--pen-accent); margin-bottom: auto; }
+.pen-track h3 { margin: 0 0 .35rem; }
+.pen-track p { margin: 0; color: rgba(255,255,255,.8); font-size: .95rem; }
+.pen-track__more { margin-top: .9rem; font-family: var(--pen-font-head); letter-spacing: .12em; text-transform: uppercase; font-size: .85rem; color: var(--pen-accent); }

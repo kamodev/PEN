@@ -1,0 +1,23 @@
+/**
+ * WordPress core classes and WooCommerce tweaks.
+ *
+ * @package PEN
+ */
+
+/* ==========================================================================
+   WordPress core
+   ========================================================================== */
+.alignleft { float: left; margin: .3em 1.5em 1em 0; }
+.alignright { float: right; margin: .3em 0 1em 1.5em; }
+.aligncenter { display: block; margin-left: auto; margin-right: auto; }
+.wp-caption-text, figcaption { font-size: .85rem; color: var(--pen-ink-soft); }
+.sticky .pen-card__title::before { content: "★ "; color: var(--pen-accent); }
+.bypostauthor { display: block; }
+.gallery { display: grid; gap: .75rem; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+
+/* ==========================================================================
+   WooCommerce
+   ========================================================================== */
+.woocommerce ul.products li.product .woocommerce-loop-product__title { font-family: var(--pen-font-head); text-transform: uppercase; font-size: 1.1rem; }
+.woocommerce ul.products li.product .price, .woocommerce div.product p.price { color: var(--pen-ink); font-weight: 700; }
+.woocommerce span.onsale { background: var(--pen-accent); }
