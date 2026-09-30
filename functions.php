@@ -9,15 +9,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'PEN_VERSION', '1.0.0' );
+define( 'PEN_VERSION', '1.1.0' );
 define( 'PEN_DIR', get_template_directory() );
 define( 'PEN_URI', get_template_directory_uri() );
 
 require PEN_DIR . '/inc/icons.php';
 require PEN_DIR . '/inc/post-types.php';
 require PEN_DIR . '/inc/meta-boxes.php';
+require PEN_DIR . '/inc/settings.php';
+require PEN_DIR . '/inc/layout.php';
 require PEN_DIR . '/inc/customizer.php';
 require PEN_DIR . '/inc/template-tags.php';
+
+if ( is_admin() ) {
+	require PEN_DIR . '/inc/admin-settings.php';
+}
 
 /**
  * Theme setup.
@@ -67,11 +73,11 @@ function pen_setup() {
 	add_theme_support(
 		'editor-color-palette',
 		array(
-			array( 'name' => __( 'Blaze', 'pen' ), 'slug' => 'blaze', 'color' => '#e0621b' ),
-			array( 'name' => __( 'Olive Drab', 'pen' ), 'slug' => 'olive', 'color' => '#4b5320' ),
-			array( 'name' => __( 'Coyote', 'pen' ), 'slug' => 'coyote', 'color' => '#c8b88a' ),
-			array( 'name' => __( 'Gunmetal', 'pen' ), 'slug' => 'gunmetal', 'color' => '#16181a' ),
-			array( 'name' => __( 'Field Paper', 'pen' ), 'slug' => 'paper', 'color' => '#f4f2ec' ),
+			array( 'name' => __( 'Accent', 'pen' ), 'slug' => 'blaze', 'color' => pen_setting( 'color_accent' ) ),
+			array( 'name' => __( 'Secondary', 'pen' ), 'slug' => 'olive', 'color' => pen_setting( 'color_olive' ) ),
+			array( 'name' => __( 'Muted Accent', 'pen' ), 'slug' => 'coyote', 'color' => pen_setting( 'color_sand' ) ),
+			array( 'name' => __( 'Dark', 'pen' ), 'slug' => 'gunmetal', 'color' => pen_setting( 'color_dark' ) ),
+			array( 'name' => __( 'Background', 'pen' ), 'slug' => 'paper', 'color' => pen_setting( 'color_bg' ) ),
 		)
 	);
 
@@ -119,9 +125,20 @@ function pen_widgets_init() {
 		array_merge(
 			$shared,
 			array(
-				'name'        => __( 'Sidebar', 'pen' ),
+				'name'        => __( 'Post & Blog Sidebar', 'pen' ),
 				'id'          => 'sidebar-1',
-				'description' => __( 'Shown beside blog posts and resources.', 'pen' ),
+				'description' => __( 'Shown beside single posts, the blog, archives and search results when enabled in Appearance → Theme Settings.', 'pen' ),
+			)
+		)
+	);
+
+	register_sidebar(
+		array_merge(
+			$shared,
+			array(
+				'name'        => __( 'Page Sidebar', 'pen' ),
+				'id'          => 'sidebar-page',
+				'description' => __( 'Shown beside pages when enabled in Appearance → Theme Settings.', 'pen' ),
 			)
 		)
 	);
@@ -167,8 +184,8 @@ function pen_scripts() {
 		$previous = $handle;
 	}
 
-	// Customizer colors override the tokens.
-	wp_add_inline_style( 'pen-tokens', pen_customizer_css() );
+	// Colors from Theme Settings (site, then network, then theme defaults) override the tokens.
+	wp_add_inline_style( 'pen-tokens', pen_color_css() );
 
 	// Child themes' style.css loads after the parent's parts.
 	if ( is_child_theme() ) {
@@ -182,6 +199,14 @@ function pen_scripts() {
 	}
 }
 add_action( 'wp_enqueue_scripts', 'pen_scripts' );
+
+/**
+ * Apply Theme Settings colors inside the block editor.
+ */
+function pen_editor_colors() {
+	wp_add_inline_style( 'wp-block-library', '.editor-styles-wrapper' . substr( pen_color_css(), 5 ) );
+}
+add_action( 'enqueue_block_editor_assets', 'pen_editor_colors' );
 
 /**
  * Preconnect to Google Fonts.

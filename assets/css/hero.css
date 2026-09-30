@@ -17,6 +17,8 @@
 .pen-hero::before {
 	content: ""; position: absolute; inset: 0; z-index: -1;
 	background: linear-gradient(90deg, rgba(14, 16, 12, .92) 0%, rgba(14, 16, 12, .7) 50%, rgba(14, 16, 12, .35) 100%);
+	/* Follow the Header & footer color from Theme Settings. */
+	background: linear-gradient(90deg, color-mix(in srgb, var(--pen-dark) 92%, transparent) 0%, color-mix(in srgb, var(--pen-dark) 70%, transparent) 50%, color-mix(in srgb, var(--pen-dark) 35%, transparent) 100%);
 }
 .pen-hero__content { max-width: 720px; padding: 4rem 0; }
 .pen-hero h1 { margin-bottom: .35em; }

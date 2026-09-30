@@ -38,14 +38,14 @@ button[type="submit"], input[type="submit"],
 .wp-block-button__link:hover,
 button[type="submit"]:hover, input[type="submit"]:hover,
 .woocommerce a.button:hover, .woocommerce button.button:hover {
-	background: #c24f10; border-color: #c24f10; color: #fff; transform: translateY(-2px);
+	background: var(--pen-accent-hover); border-color: var(--pen-accent-hover); color: var(--pen-accent-ink); transform: translateY(-2px);
 }
 /* clip-path hides an outside outline, so clipped buttons draw focus inside the edge. */
 .pen-btn:focus-visible,
 .wp-block-button__link:focus-visible,
 button[type="submit"]:focus-visible, input[type="submit"]:focus-visible,
 .woocommerce a.button:focus-visible, .woocommerce button.button:focus-visible {
-	outline: 2px solid #fff; outline-offset: -6px;
+	outline: 2px solid var(--pen-accent-ink); outline-offset: -6px;
 }
 .pen-btn svg { width: 1.1em; height: 1.1em; flex-shrink: 0; }
 

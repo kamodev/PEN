@@ -21,7 +21,7 @@ while ( have_posts() ) :
 	</header>
 
 	<div class="pen-section">
-		<div class="pen-container pen-layout<?php echo is_active_sidebar( 'sidebar-1' ) ? '' : ' pen-layout--full'; ?>">
+		<div class="pen-container <?php echo esc_attr( pen_layout_class() ); ?>">
 			<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 				<?php if ( has_post_thumbnail() ) : ?>
 					<figure class="pen-featured entry-content"><?php the_post_thumbnail( 'large' ); ?></figure>
