@@ -73,3 +73,12 @@
 .pen-newsletter input[type="email"]:focus { border-color: var(--pen-accent); outline: none; }
 .pen-newsletter__note { font-size: .8rem; opacity: .75; margin-top: .75rem; }
 @media (max-width: 520px) { .pen-newsletter { flex-direction: column; } }
+
+/* Newsletter form states and spam trap (used by the MailPoet integration). */
+.pen-newsletter__status {
+	max-width: 560px; margin: 0 auto 1rem; padding: .75rem 1rem;
+	background: rgba(255, 255, 255, .12); border-left: 4px solid var(--pen-accent); text-align: left; font-weight: 600;
+}
+.pen-newsletter__status--invalid,
+.pen-newsletter__status--error { border-left-color: #ffb4a8; }
+.pen-hp { position: absolute !important; left: -10000px; width: 1px; height: 1px; overflow: hidden; }

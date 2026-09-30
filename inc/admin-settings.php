@@ -567,6 +567,62 @@ function pen_render_integrations( $values ) {
 				</table>
 			</details>
 		</section>
+
+		<section class="pen-integration">
+			<header><h2>MailPoet</h2><?php pen_render_plugin_status( 'mailpoet/mailpoet.php', pen_mailpoet_active(), 'mailpoet' ); ?></header>
+			<p><?php esc_html_e( 'Send newsletter sign-ups from the homepage "Free Download" band straight into MailPoet. MailPoet\'s confirmation (double opt-in) and welcome emails apply as usual.', 'pen' ); ?></p>
+			<?php if ( pen_mailpoet_active() ) : ?>
+				<?php
+				pen_render_id_field( 'pen_settings', 'mailpoet_list', $values, __( 'Add sign-ups from the theme\'s email form to this list', 'pen' ), pen_mailpoet_lists(), __( 'Don\'t use MailPoet for the theme form', 'pen' ) );
+				pen_render_id_field( 'pen_settings', 'mailpoet_form', $values, __( 'Or show this MailPoet form instead (for extra fields)', 'pen' ), pen_mailpoet_forms(), __( 'No MailPoet form (use the theme\'s form)', 'pen' ) );
+				?>
+				<p class="description">
+					<?php
+					printf(
+						/* translators: 1: MailPoet lists URL, 2: MailPoet forms URL. */
+						wp_kses_post( __( 'A form overrides the list. Manage <a href="%1$s">lists</a> and <a href="%2$s">forms</a> in MailPoet; a form sets its own list.', 'pen' ) ),
+						esc_url( admin_url( 'admin.php?page=mailpoet-segments' ) ),
+						esc_url( admin_url( 'admin.php?page=mailpoet-forms' ) )
+					);
+					?>
+				</p>
+			<?php endif; ?>
+			<?php pen_render_choice_field( 'pen_settings', 'mailpoet_match', $values, __( 'MailPoet form style', 'pen' ) ); ?>
+		</section>
 	</div>
+	<?php
+}
+
+/**
+ * A select for an ID setting (for example a MailPoet list), with a "none" option.
+ *
+ * @param string $name       Input name prefix.
+ * @param string $key        Setting key.
+ * @param array  $values     Saved values.
+ * @param string $label      Field label.
+ * @param array  $options    id => name.
+ * @param string $none_label Label for "nothing chosen".
+ */
+function pen_render_id_field( $name, $key, $values, $label, $options, $none_label ) {
+	$id      = 'pen-' . str_replace( '_', '-', $key );
+	$current = isset( $values[ $key ] ) ? (string) $values[ $key ] : '';
+	?>
+	<p class="pen-inline-field">
+		<label for="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $label ); ?></label>
+		<select id="<?php echo esc_attr( $id ); ?>" name="<?php echo esc_attr( $name . '[' . $key . ']' ); ?>">
+			<option value="" <?php selected( $current, '' ); ?>><?php echo esc_html( $none_label ); ?></option>
+			<?php foreach ( $options as $option_id => $option_name ) : ?>
+				<option value="<?php echo esc_attr( $option_id ); ?>" <?php selected( $current, (string) $option_id ); ?>><?php echo esc_html( $option_name ); ?></option>
+			<?php endforeach; ?>
+			<?php if ( $current && ! isset( $options[ (int) $current ] ) ) : ?>
+				<option value="<?php echo esc_attr( $current ); ?>" selected>
+					<?php
+					/* translators: %s: ID. */
+					echo esc_html( sprintf( __( 'Missing (ID %s): deleted or disabled', 'pen' ), $current ) );
+					?>
+				</option>
+			<?php endif; ?>
+		</select>
+	</p>
 	<?php
 }

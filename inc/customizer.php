@@ -345,7 +345,7 @@ function pen_customize_register( $wp_customize ) {
 
 	$add( 'pen_news_title', 'pen_news', __( 'Title', 'pen' ) );
 	$add( 'pen_news_text', 'pen_news', __( 'Text', 'pen' ), 'textarea' );
-	$add( 'pen_news_action', 'pen_news', __( 'Form action URL (Mailchimp, ConvertKit, etc.)', 'pen' ), 'url', array( 'description' => __( 'Leave empty to hide the form and show the button only.', 'pen' ) ) );
+	$add( 'pen_news_action', 'pen_news', __( 'Form action URL (Mailchimp, ConvertKit, etc.)', 'pen' ), 'url', array( 'description' => __( 'For Mailchimp, ConvertKit and similar. Not needed with MailPoet: choose a MailPoet list or form under Appearance → Theme Settings → Integrations instead (that takes priority). Leave empty for no form.', 'pen' ) ) );
 	$add( 'pen_news_field', 'pen_news', __( 'Email field name', 'pen' ), 'text', array( 'description' => __( 'Mailchimp uses EMAIL; ConvertKit uses email_address.', 'pen' ) ) );
 	$add( 'pen_news_button', 'pen_news', __( 'Button text', 'pen' ) );
 	$add( 'pen_news_image', 'pen_news', __( 'Background image', 'pen' ), 'image' );
