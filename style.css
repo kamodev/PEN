@@ -118,6 +118,7 @@ p { margin: 0 0 1.1em; }
 /* ==========================================================================
    Buttons
    ========================================================================== */
+/* Knife-edge (blade-cut) buttons, structured after the NRDS button styles. */
 .pen-btn,
 .wp-block-button__link,
 button[type="submit"], input[type="submit"],
@@ -126,33 +127,60 @@ button[type="submit"], input[type="submit"],
 	align-items: center;
 	justify-content: center;
 	gap: .5rem;
-	padding: .85rem 1.6rem;
+	padding: 14px 32px;
 	border: 2px solid var(--pen-accent);
-	border-radius: var(--pen-radius);
+	border-radius: 0;
 	background: var(--pen-accent);
 	color: var(--pen-accent-ink);
 	font-family: var(--pen-font-head);
 	font-size: 1rem;
-	font-weight: 600;
-	letter-spacing: .08em;
+	font-weight: 500;
+	letter-spacing: 1px;
 	text-transform: uppercase;
+	text-align: center;
 	text-decoration: none;
 	line-height: 1.2;
 	white-space: nowrap;
 	cursor: pointer;
-	transition: background .15s, color .15s, border-color .15s, transform .15s;
+	clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+	transition: background .2s, color .2s, border-color .2s, transform .2s;
 }
 .pen-btn:hover,
+.wp-block-button__link:hover,
 button[type="submit"]:hover, input[type="submit"]:hover,
 .woocommerce a.button:hover, .woocommerce button.button:hover {
-	background: #c24f10; border-color: #c24f10; color: #fff; transform: translateY(-1px);
+	background: #c24f10; border-color: #c24f10; color: #fff; transform: translateY(-2px);
+}
+/* clip-path hides an outside outline, so clipped buttons draw focus inside the edge. */
+.pen-btn:focus-visible,
+.wp-block-button__link:focus-visible,
+button[type="submit"]:focus-visible, input[type="submit"]:focus-visible,
+.woocommerce a.button:focus-visible, .woocommerce button.button:focus-visible {
+	outline: 2px solid #fff; outline-offset: -6px;
 }
 .pen-btn svg { width: 1.1em; height: 1.1em; flex-shrink: 0; }
-.pen-btn--ghost { background: transparent; color: inherit; border-color: currentColor; }
+
+/* Outline: for dark backgrounds. Square corners keep the border unbroken. */
+.pen-btn--ghost { background: transparent; color: inherit; border-color: currentColor; clip-path: none; }
 .pen-btn--ghost:hover { background: #fff; border-color: #fff; color: var(--pen-dark); }
+.pen-btn--ghost:focus-visible { outline: 3px solid var(--pen-accent); outline-offset: 2px; }
+
+/* Dark: secondary action, or on accent backgrounds. */
 .pen-btn--dark { background: var(--pen-dark); border-color: var(--pen-dark); }
 .pen-btn--dark:hover { background: var(--pen-olive); border-color: var(--pen-olive); }
-.pen-btn--sm { padding: .55rem 1rem; font-size: .875rem; }
+
+/* Small. */
+.pen-btn--sm {
+	padding: 10px 20px; font-size: .9rem;
+	clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+}
+
+/* Header call-to-action. */
+.pen-header__cta.pen-btn {
+	padding: 10px 22px;
+	clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+}
+
 .pen-btn[aria-disabled="true"] { opacity: .55; pointer-events: none; }
 
 /* ==========================================================================
