@@ -1,0 +1,212 @@
+<?php
+/**
+ * Preparedness Education Network theme functions.
+ *
+ * @package PEN
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+define( 'PEN_VERSION', '1.0.0' );
+define( 'PEN_DIR', get_template_directory() );
+define( 'PEN_URI', get_template_directory_uri() );
+
+require PEN_DIR . '/inc/icons.php';
+require PEN_DIR . '/inc/post-types.php';
+require PEN_DIR . '/inc/meta-boxes.php';
+require PEN_DIR . '/inc/customizer.php';
+require PEN_DIR . '/inc/template-tags.php';
+
+/**
+ * Theme setup.
+ */
+function pen_setup() {
+	load_theme_textdomain( 'pen', PEN_DIR . '/languages' );
+
+	add_theme_support( 'automatic-feed-links' );
+	add_theme_support( 'title-tag' );
+	add_theme_support( 'post-thumbnails' );
+	add_theme_support( 'responsive-embeds' );
+	add_theme_support( 'align-wide' );
+	add_theme_support( 'wp-block-styles' );
+	add_theme_support( 'editor-styles' );
+	add_theme_support( 'customize-selective-refresh-widgets' );
+	add_theme_support(
+		'html5',
+		array( 'search-form', 'comment-form', 'comment-list', 'gallery', 'caption', 'style', 'script', 'navigation-widgets' )
+	);
+	add_theme_support(
+		'custom-logo',
+		array(
+			'height'      => 112,
+			'width'       => 320,
+			'flex-height' => true,
+			'flex-width'  => true,
+		)
+	);
+
+	// WooCommerce gear shop support.
+	add_theme_support( 'woocommerce' );
+	add_theme_support( 'wc-product-gallery-zoom' );
+	add_theme_support( 'wc-product-gallery-lightbox' );
+	add_theme_support( 'wc-product-gallery-slider' );
+
+	add_image_size( 'pen-card', 720, 450, true );
+	add_image_size( 'pen-square', 600, 600, true );
+	add_image_size( 'pen-hero', 1920, 1080, true );
+
+	register_nav_menus(
+		array(
+			'primary' => __( 'Primary Menu', 'pen' ),
+			'footer'  => __( 'Footer Legal Menu', 'pen' ),
+		)
+	);
+
+	add_theme_support(
+		'editor-color-palette',
+		array(
+			array( 'name' => __( 'Blaze', 'pen' ), 'slug' => 'blaze', 'color' => '#e0621b' ),
+			array( 'name' => __( 'Olive Drab', 'pen' ), 'slug' => 'olive', 'color' => '#4b5320' ),
+			array( 'name' => __( 'Coyote', 'pen' ), 'slug' => 'coyote', 'color' => '#c8b88a' ),
+			array( 'name' => __( 'Gunmetal', 'pen' ), 'slug' => 'gunmetal', 'color' => '#16181a' ),
+			array( 'name' => __( 'Field Paper', 'pen' ), 'slug' => 'paper', 'color' => '#f4f2ec' ),
+		)
+	);
+
+	add_editor_style( array( pen_fonts_url(), 'style.css' ) );
+}
+add_action( 'after_setup_theme', 'pen_setup' );
+
+/**
+ * Content width.
+ */
+function pen_content_width() {
+	$GLOBALS['content_width'] = apply_filters( 'pen_content_width', 780 );
+}
+add_action( 'after_setup_theme', 'pen_content_width', 0 );
+
+/**
+ * Google Fonts URL.
+ */
+function pen_fonts_url() {
+	return 'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Oswald:wght@500;600;700&display=swap';
+}
+
+/**
+ * Widget areas.
+ */
+function pen_widgets_init() {
+	$shared = array(
+		'before_widget' => '<section id="%1$s" class="widget %2$s">',
+		'after_widget'  => '</section>',
+		'before_title'  => '<h2 class="widget-title">',
+		'after_title'   => '</h2>',
+	);
+
+	register_sidebar(
+		array_merge(
+			$shared,
+			array(
+				'name'        => __( 'Sidebar', 'pen' ),
+				'id'          => 'sidebar-1',
+				'description' => __( 'Shown beside blog posts and resources.', 'pen' ),
+			)
+		)
+	);
+
+	for ( $i = 1; $i <= 3; $i++ ) {
+		register_sidebar(
+			array_merge(
+				$shared,
+				array(
+					/* translators: %d: footer column number. */
+					'name' => sprintf( __( 'Footer Column %d', 'pen' ), $i ),
+					'id'   => 'footer-' . $i,
+				)
+			)
+		);
+	}
+}
+add_action( 'widgets_init', 'pen_widgets_init' );
+
+/**
+ * Scripts and styles.
+ */
+function pen_scripts() {
+	wp_enqueue_style( 'pen-fonts', pen_fonts_url(), array(), null );
+	wp_enqueue_style( 'pen-style', get_stylesheet_uri(), array( 'pen-fonts' ), PEN_VERSION );
+	wp_add_inline_style( 'pen-style', pen_customizer_css() );
+
+	wp_enqueue_script( 'pen-main', PEN_URI . '/assets/js/main.js', array(), PEN_VERSION, true );
+
+	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
+		wp_enqueue_script( 'comment-reply' );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'pen_scripts' );
+
+/**
+ * Preconnect to Google Fonts.
+ *
+ * @param array  $urls          URLs to print for resource hints.
+ * @param string $relation_type The relation type the URLs are printed for.
+ * @return array
+ */
+function pen_resource_hints( $urls, $relation_type ) {
+	if ( 'preconnect' === $relation_type && wp_style_is( 'pen-fonts', 'queue' ) ) {
+		$urls[] = array( 'href' => 'https://fonts.gstatic.com', 'crossorigin' );
+	}
+	return $urls;
+}
+add_filter( 'wp_resource_hints', 'pen_resource_hints', 10, 2 );
+
+/**
+ * Excerpt length and suffix.
+ */
+add_filter(
+	'excerpt_length',
+	function () {
+		return 24;
+	}
+);
+add_filter(
+	'excerpt_more',
+	function () {
+		return '&hellip;';
+	}
+);
+
+/**
+ * Keep the WooCommerce cart count in the header fresh after AJAX add-to-cart.
+ *
+ * @param array $fragments Cart fragments.
+ * @return array
+ */
+function pen_cart_fragment( $fragments ) {
+	ob_start();
+	pen_cart_count();
+	$fragments['.pen-cart-count'] = ob_get_clean();
+	return $fragments;
+}
+add_filter( 'woocommerce_add_to_cart_fragments', 'pen_cart_fragment' );
+
+/**
+ * Wrap WooCommerce pages in the theme's container.
+ */
+remove_action( 'woocommerce_before_main_content', 'woocommerce_output_content_wrapper', 10 );
+remove_action( 'woocommerce_after_main_content', 'woocommerce_output_content_wrapper_end', 10 );
+add_action(
+	'woocommerce_before_main_content',
+	function () {
+		echo '<div class="pen-section"><div class="pen-container">';
+	}
+);
+add_action(
+	'woocommerce_after_main_content',
+	function () {
+		echo '</div></div>';
+	}
+);
+remove_action( 'woocommerce_sidebar', 'woocommerce_get_sidebar', 10 );
