@@ -33,6 +33,23 @@ function pen_sidebar_areas() {
  * @return string|null
  */
 function pen_sidebar_context() {
+	/**
+	 * Filter the sidebar context. Return null for no theme sidebar.
+	 *
+	 * @param string|null $context 'post', 'page', 'archive' or null.
+	 */
+	return apply_filters( 'pen_sidebar_context', pen_default_sidebar_context() );
+}
+
+/**
+ * Sidebar context before integrations adjust it.
+ *
+ * @return string|null
+ */
+function pen_default_sidebar_context() {
+	if ( pen_is_bare_content() ) {
+		return null;
+	}
 	if ( is_front_page() || ( function_exists( 'is_woocommerce' ) && is_woocommerce() ) ) {
 		return null;
 	}
@@ -104,6 +121,9 @@ function pen_layout_class() {
 function pen_sidebar_body_class( $classes ) {
 	$sidebar   = pen_get_sidebar();
 	$classes[] = $sidebar ? 'has-sidebar sidebar-' . $sidebar['position'] : 'no-sidebar';
+	if ( pen_is_minimal_header() ) {
+		$classes[] = 'pen-minimal';
+	}
 	return $classes;
 }
 add_filter( 'body_class', 'pen_sidebar_body_class' );

@@ -1,5 +1,5 @@
 /**
- * WordPress core classes and WooCommerce tweaks.
+ * WordPress core classes. WooCommerce styles live in woocommerce.css.
  *
  * @package PEN
  */
@@ -14,10 +14,3 @@
 .sticky .pen-card__title::before { content: "★ "; color: var(--pen-accent); }
 .bypostauthor { display: block; }
 .gallery { display: grid; gap: .75rem; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
-
-/* ==========================================================================
-   WooCommerce
-   ========================================================================== */
-.woocommerce ul.products li.product .woocommerce-loop-product__title { font-family: var(--pen-font-head); text-transform: uppercase; font-size: 1.1rem; }
-.woocommerce ul.products li.product .price, .woocommerce div.product p.price { color: var(--pen-ink); font-weight: 700; }
-.woocommerce span.onsale { background: var(--pen-accent); }

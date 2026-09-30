@@ -118,3 +118,23 @@
 @media (min-width: 1025px) { .pen-nav__cta { display: none; } }
 
 body.pen-nav-open { overflow: hidden; }
+
+/* ==========================================================================
+   Minimal header (checkout and funnel steps)
+   ========================================================================== */
+.pen-header--minimal { position: static; }
+.pen-header--minimal .pen-header__inner { justify-content: space-between; min-height: 68px; }
+.pen-header__secure {
+	display: inline-flex; align-items: center; gap: .45rem;
+	font-size: .8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--pen-sand);
+}
+.pen-header__secure svg { width: 16px; height: 16px; }
+.pen-footer--minimal .pen-footer__bottom { border-top: 0; }
+
+/* Keep the minimal footer at the bottom of short checkout and funnel pages. */
+body.pen-minimal {
+	display: flex;
+	flex-direction: column;
+	min-height: calc(100vh - var(--wp-admin--admin-bar--height, 0px));
+}
+body.pen-minimal .pen-main { flex: 1 0 auto; }

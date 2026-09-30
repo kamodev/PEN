@@ -11,7 +11,8 @@
 .pen-btn,
 .wp-block-button__link,
 button[type="submit"], input[type="submit"],
-.woocommerce a.button, .woocommerce button.button {
+.woocommerce a.button, .woocommerce button.button,
+.woocommerce :is(a, button, input).button.alt {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -37,7 +38,8 @@ button[type="submit"], input[type="submit"],
 .pen-btn:hover,
 .wp-block-button__link:hover,
 button[type="submit"]:hover, input[type="submit"]:hover,
-.woocommerce a.button:hover, .woocommerce button.button:hover {
+.woocommerce a.button:hover, .woocommerce button.button:hover,
+.woocommerce :is(a, button, input).button.alt:hover {
 	background: var(--pen-accent-hover); border-color: var(--pen-accent-hover); color: var(--pen-accent-ink); transform: translateY(-2px);
 }
 /* clip-path hides an outside outline, so clipped buttons draw focus inside the edge. */

@@ -30,6 +30,15 @@ while ( have_posts() ) :
 	</div>
 
 	<?php
+	/**
+	 * After the instructor bio (the Amelia integration adds a booking form here).
+	 *
+	 * @param int $pen_id Instructor post ID.
+	 */
+	do_action( 'pen_instructor_after_content', $pen_id );
+	?>
+
+	<?php
 	// Upcoming classes taught by this instructor (IDs are stored as a serialized array).
 	$pen_classes = pen_upcoming_courses( 50 );
 	$pen_rows    = array();

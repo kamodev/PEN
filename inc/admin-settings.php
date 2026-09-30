@@ -303,18 +303,23 @@ function pen_render_settings_page() {
 	if ( ! current_user_can( 'edit_theme_options' ) ) {
 		return;
 	}
-	$tab    = ( isset( $_GET['tab'] ) && 'colors' === sanitize_key( wp_unslash( $_GET['tab'] ) ) ) ? 'colors' : 'layout'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-	$group  = 'colors' === $tab ? 'colors' : 'layout';
+	$tab    = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'layout'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$tab    = in_array( $tab, array( 'layout', 'colors', 'integrations' ), true ) ? $tab : 'layout';
+	$group  = $tab;
 	$locked = pen_is_locked( $group );
 	$values = pen_site_settings();
 	$tabs   = array(
 		'layout' => __( 'Layout & Sidebars', 'pen' ),
 		'colors' => __( 'Colors', 'pen' ),
+		'integrations' => __( 'Integrations', 'pen' ),
 	);
 	?>
 	<div class="wrap pen-settings">
 		<h1><?php esc_html_e( 'Theme Settings', 'pen' ); ?></h1>
 		<?php settings_errors(); ?>
+		<?php if ( isset( $_GET['pen-kit-restored'] ) ) : // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
+			<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Elementor\'s previous colors and fonts are back, and matching is off.', 'pen' ); ?></p></div>
+		<?php endif; ?>
 
 		<nav class="nav-tab-wrapper" aria-label="<?php esc_attr_e( 'Settings sections', 'pen' ); ?>">
 			<?php foreach ( $tabs as $slug => $label ) : ?>
@@ -337,7 +342,11 @@ function pen_render_settings_page() {
 		<form method="post" action="options.php">
 			<?php
 			settings_fields( 'pen_settings' );
-			if ( 'colors' === $tab ) {
+			// Marks this save as one tab's fields, to merge with the other tabs' stored values.
+			echo '<input type="hidden" name="pen_settings[_tab]" value="' . esc_attr( $tab ) . '">';
+			if ( 'integrations' === $tab ) {
+				pen_render_integrations( $values );
+			} elseif ( 'colors' === $tab ) {
 				echo $locked ? '' : '<p>' . esc_html__( 'Set the colors used across the site. Leave a color blank to use the default. You can also change colors with a live preview in the Customizer.', 'pen' ) . ' <a href="' . esc_url( admin_url( 'customize.php?autofocus[section]=pen_brand' ) ) . '">' . esc_html__( 'Open the Customizer', 'pen' ) . '</a></p>';
 				pen_render_color_fields( 'pen_settings', $locked ? pen_network_settings() : $values, false, $locked );
 			} else {
@@ -413,3 +422,151 @@ function pen_save_network_settings() {
 	exit;
 }
 add_action( 'network_admin_edit_pen_network_settings', 'pen_save_network_settings' );
+
+/**
+ * A select for one choice setting, with a "Default" option.
+ *
+ * @param string $name   Input name prefix.
+ * @param string $key    Setting key.
+ * @param array  $values Saved values.
+ * @param string $label  Field label.
+ */
+function pen_render_choice_field( $name, $key, $values, $label ) {
+	$fields  = pen_choice_fields();
+	$id      = 'pen-' . str_replace( '_', '-', $key );
+	$current = isset( $values[ $key ] ) ? $values[ $key ] : '';
+	$inherit = pen_inherit_value( $key, false );
+	?>
+	<p class="pen-inline-field">
+		<label for="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $label ); ?></label>
+		<select id="<?php echo esc_attr( $id ); ?>" name="<?php echo esc_attr( $name . '[' . $key . ']' ); ?>">
+			<option value="" <?php selected( $current, '' ); ?>>
+				<?php
+				/* translators: %s: default choice. */
+				echo esc_html( sprintf( __( 'Default: %s', 'pen' ), $fields[ $key ][0][ $inherit ] ) );
+				?>
+			</option>
+			<?php foreach ( $fields[ $key ][0] as $value => $choice ) : ?>
+				<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $current, $value ); ?>><?php echo esc_html( $choice ); ?></option>
+			<?php endforeach; ?>
+		</select>
+	</p>
+	<?php
+}
+
+/**
+ * Plugin status with an install or activate link.
+ *
+ * @param string $file   Plugin file relative to the plugins folder.
+ * @param bool   $active Whether the plugin is active.
+ * @param string $search Search term for the plugin installer.
+ */
+function pen_render_plugin_status( $file, $active, $search ) {
+	if ( $active ) {
+		echo '<span class="pen-status pen-status--on">' . esc_html__( 'Active', 'pen' ) . '</span>';
+		return;
+	}
+	if ( ! function_exists( 'get_plugins' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+	}
+	$installed = array_key_exists( $file, get_plugins() );
+	if ( $installed ) {
+		echo '<span class="pen-status">' . esc_html__( 'Installed, not active', 'pen' ) . '</span>';
+		if ( current_user_can( 'activate_plugins' ) ) {
+			$url = wp_nonce_url( self_admin_url( 'plugins.php?action=activate&plugin=' . rawurlencode( $file ) ), 'activate-plugin_' . $file );
+			echo ' <a class="button button-small" href="' . esc_url( $url ) . '">' . esc_html__( 'Activate', 'pen' ) . '</a>';
+		}
+		return;
+	}
+	echo '<span class="pen-status">' . esc_html__( 'Not installed', 'pen' ) . '</span>';
+	if ( current_user_can( 'install_plugins' ) ) {
+		$url = network_admin_url( 'plugin-install.php?tab=search&type=term&s=' . rawurlencode( $search ) );
+		if ( ! is_multisite() ) {
+			$url = admin_url( 'plugin-install.php?tab=search&type=term&s=' . rawurlencode( $search ) );
+		}
+		echo ' <a class="button button-small" href="' . esc_url( $url ) . '">' . esc_html__( 'Install', 'pen' ) . '</a>';
+	}
+}
+
+/**
+ * Integrations tab: WooCommerce, FunnelKit, Elementor, Amelia.
+ *
+ * @param array $values Saved values.
+ */
+function pen_render_integrations( $values ) {
+	$wc_active = class_exists( 'WooCommerce' );
+	echo '<p>' . esc_html__( 'The theme is built to work with these plugins. Each one is optional; its settings apply once it is active.', 'pen' ) . '</p>';
+	?>
+	<div class="pen-integrations">
+		<section class="pen-integration">
+			<header><h2>WooCommerce</h2><?php pen_render_plugin_status( 'woocommerce/woocommerce.php', $wc_active, 'woocommerce' ); ?></header>
+			<p><?php esc_html_e( 'Shop, product, cart, checkout and account pages use the theme layout, colors and knife-edge buttons, including the block-based cart and checkout.', 'pen' ); ?></p>
+			<?php if ( $wc_active ) : ?>
+				<?php $overrides = pen_wc_template_overrides(); ?>
+				<p class="pen-check <?php echo $overrides ? 'is-warn' : 'is-ok'; ?>">
+					<?php
+					if ( $overrides ) {
+						/* translators: %s: list of template files. */
+						echo esc_html( sprintf( __( 'Template overrides found: %s. These can go out of date when WooCommerce updates; check WooCommerce → Status.', 'pen' ), implode( ', ', $overrides ) ) );
+					} else {
+						/* translators: %s: WooCommerce version. */
+						echo esc_html( sprintf( __( 'Update-safe: the theme overrides no WooCommerce templates, so WooCommerce updates (now %s) never leave theme files out of date.', 'pen' ), WC()->version ) );
+					}
+					?>
+				</p>
+			<?php endif; ?>
+			<?php pen_render_choice_field( 'pen_settings', 'wc_checkout_header', $values, __( 'Checkout page header', 'pen' ) ); ?>
+		</section>
+
+		<section class="pen-integration">
+			<header><h2>FunnelKit</h2><?php pen_render_plugin_status( 'funnel-builder/funnel-builder.php', pen_funnelkit_active(), 'funnelkit' ); ?></header>
+			<p><?php esc_html_e( 'Funnel steps (sales, opt-in, checkout, upsell and thank-you pages) show only their own content: no page banner, sidebar, navigation or announcement bar. FunnelKit\'s checkout designs keep their own form styles.', 'pen' ); ?></p>
+			<?php pen_render_choice_field( 'pen_settings', 'funnel_header', $values, __( 'Funnel step header', 'pen' ) ); ?>
+			<p class="description"><?php esc_html_e( 'For a completely blank step, choose FunnelKit\'s "Canvas" template on that step instead.', 'pen' ); ?></p>
+		</section>
+
+		<section class="pen-integration">
+			<header><h2>Elementor</h2><?php pen_render_plugin_status( 'elementor/elementor.php', pen_elementor_active(), 'elementor' ); ?></header>
+			<p><?php esc_html_e( 'Pages built with Elementor run full width under the theme header. Elementor Pro\'s Theme Builder can replace the header and footer.', 'pen' ); ?></p>
+			<?php pen_render_choice_field( 'pen_settings', 'elementor_default_editor', $values, __( 'Editor for new pages, posts, classes and instructors', 'pen' ) ); ?>
+			<p class="description"><?php esc_html_e( 'With Elementor as the default, "Add New" opens Elementor. "Add New (Block Editor)" stays in each menu.', 'pen' ); ?></p>
+			<?php pen_render_choice_field( 'pen_settings', 'elementor_sync', $values, __( 'Elementor global colors and fonts', 'pen' ) ); ?>
+			<p class="description"><?php esc_html_e( 'When matched, Elementor\'s global colors follow the Colors tab (Primary = Header & footer, Secondary = Secondary, Text = Text, Accent = Accent) and its global fonts use Oswald and Inter. Changes made to those four colors inside Elementor are replaced on the next sync; your own custom colors are kept.', 'pen' ); ?></p>
+			<?php if ( get_option( 'pen_elementor_kit_backup' ) ) : ?>
+				<p>
+					<?php
+					$restore_url = wp_nonce_url( admin_url( 'admin-post.php?action=pen_elementor_restore_kit' ), 'pen_elementor_restore_kit' );
+					?>
+					<a class="button" href="<?php echo esc_url( $restore_url ); ?>"><?php esc_html_e( 'Restore Elementor\'s previous colors and fonts', 'pen' ); ?></a>
+				</p>
+				<p class="description"><?php esc_html_e( 'Puts back the global colors, fonts and content width Elementor had before the theme first matched them, and turns matching off.', 'pen' ); ?></p>
+			<?php endif; ?>
+		</section>
+
+		<section class="pen-integration">
+			<header><h2>Amelia</h2><?php pen_render_plugin_status( 'ameliabooking/ameliabooking.php', pen_amelia_active(), 'amelia booking' ); ?></header>
+			<p><?php esc_html_e( 'Link a class to an Amelia event (Class Details → "Amelia event ID") to show Amelia\'s booking form on the class page and point its Register buttons there. Add an "Amelia employee ID" to an instructor to offer private-session booking on their page.', 'pen' ); ?></p>
+			<?php pen_render_choice_field( 'pen_settings', 'amelia_match', $values, __( 'Booking form style', 'pen' ) ); ?>
+			<details class="pen-amelia-colors">
+				<summary><?php esc_html_e( 'Matching values for Amelia → Customize', 'pen' ); ?></summary>
+				<p class="description"><?php esc_html_e( 'Entering these in Amelia keeps its emails, customer panel and any form the theme style does not reach consistent with the site.', 'pen' ); ?></p>
+				<table class="widefat striped">
+					<tbody>
+					<?php foreach ( pen_amelia_color_map() as $label => $value ) : ?>
+						<tr>
+							<th scope="row"><?php echo esc_html( $label ); ?></th>
+							<td>
+								<?php if ( '#' === substr( $value, 0, 1 ) ) : ?>
+									<span class="pen-swatch" style="background:<?php echo esc_attr( $value ); ?>" aria-hidden="true"></span>
+								<?php endif; ?>
+								<code><?php echo esc_html( $value ); ?></code>
+							</td>
+						</tr>
+					<?php endforeach; ?>
+					</tbody>
+				</table>
+			</details>
+		</section>
+	</div>
+	<?php
+}

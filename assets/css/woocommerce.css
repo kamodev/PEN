@@ -1,0 +1,342 @@
+/**
+ * WooCommerce: shop grid, product pages, notices, forms, cart, checkout
+ * (classic and block-based) and My Account. Loaded only when WooCommerce is
+ * active (inc/woocommerce/setup.php).
+ *
+ * These rules style WooCommerce's own markup and never depend on template
+ * overrides. Form rules skip FunnelKit funnel steps (body.pen-funnel-step)
+ * so FunnelKit's checkout designs are left alone.
+ *
+ * @package PEN
+ */
+
+/* ==========================================================================
+   Buttons WooCommerce colors itself
+   ========================================================================== */
+/* Disabled primary buttons (e.g. "Add to cart" before a variation is chosen);
+   selectors mirror WooCommerce's so the theme colors apply. */
+.woocommerce :is(a, button, input).button.alt.disabled,
+.woocommerce :is(a, button, input).button.alt.disabled:hover,
+.woocommerce :is(a, button, input).button.alt:disabled,
+.woocommerce :is(a, button, input).button.alt:disabled:hover,
+.woocommerce :is(a, button, input).button.alt:disabled[disabled],
+.woocommerce :is(a, button, input).button.alt:disabled[disabled]:hover {
+	background-color: var(--pen-accent);
+	border-color: var(--pen-accent);
+	color: var(--pen-accent-ink);
+}
+
+/* Product review "Submit" button. */
+.woocommerce #respond input#submit {
+	border: 2px solid var(--pen-accent);
+	border-radius: 0;
+	background: var(--pen-accent);
+	color: var(--pen-accent-ink);
+	font-family: var(--pen-font-head);
+	font-weight: 500;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+}
+.woocommerce #respond input#submit:hover { border-color: var(--pen-accent-hover); background: var(--pen-accent-hover); color: var(--pen-accent-ink); }
+
+/* ==========================================================================
+   Store notice, breadcrumbs, titles
+   ========================================================================== */
+.woocommerce-store-notice,
+p.demo_store {
+	background: var(--pen-accent);
+	color: var(--pen-accent-ink);
+	font-weight: 600;
+}
+.woocommerce-store-notice a { color: inherit; }
+
+.woocommerce .woocommerce-breadcrumb {
+	margin: 0 0 1.5rem;
+	font-size: .8rem;
+	letter-spacing: .1em;
+	text-transform: uppercase;
+	color: var(--pen-ink-soft);
+}
+.woocommerce .woocommerce-breadcrumb a { color: var(--pen-olive); text-decoration: none; }
+.woocommerce .woocommerce-breadcrumb a:hover { color: var(--pen-accent); }
+
+.woocommerce-products-header__title.page-title { margin-bottom: .25em; }
+.woocommerce .woocommerce-result-count { color: var(--pen-ink-soft); font-size: .9rem; }
+.woocommerce .woocommerce-ordering select {
+	padding: .55rem .8rem;
+	border: 1px solid var(--pen-border);
+	background: var(--pen-surface);
+	color: var(--pen-ink);
+	font: inherit;
+}
+
+/* ==========================================================================
+   Product grid
+   ========================================================================== */
+/* Rows stretch so cards in a row share one height; WooCommerce's column widths still apply. */
+.woocommerce ul.products { display: flex; flex-wrap: wrap; }
+.woocommerce ul.products::before,
+.woocommerce ul.products::after { display: none; }
+.woocommerce ul.products li.product {
+	display: flex;
+	flex-direction: column;
+	padding-bottom: 1.25rem;
+	background: var(--pen-surface);
+	border: 1px solid var(--pen-border);
+	box-shadow: var(--pen-shadow);
+	text-align: left;
+	transition: transform .15s, box-shadow .15s;
+}
+.woocommerce ul.products li.product:hover { transform: translateY(-3px); }
+.woocommerce ul.products li.product a img { margin: 0 0 1rem; }
+.woocommerce ul.products li.product .woocommerce-loop-product__title,
+.woocommerce ul.products li.product .woocommerce-loop-category__title {
+	padding: 0 1.1rem;
+	font-family: var(--pen-font-head);
+	font-size: 1.1rem;
+	text-transform: uppercase;
+	color: var(--pen-ink);
+}
+.woocommerce ul.products li.product .price,
+.woocommerce ul.products li.product .star-rating { margin-left: 1.1rem; margin-right: 1.1rem; }
+.woocommerce ul.products li.product .price { color: var(--pen-ink); font-weight: 700; font-size: 1.05rem; }
+.woocommerce ul.products li.product .button { margin: auto 1.1rem 0; align-self: flex-start; }
+.woocommerce ul.products li.product .added_to_cart { margin: .5rem 1.1rem 0; font-size: .85rem; }
+.woocommerce ul.products li.product .button { max-width: calc(100% - 2.2rem); white-space: normal; }
+
+/* Two-up grid on phones (WooCommerce's small-screen layout): keep a gap and fit the buttons. */
+@media (max-width: 768px) {
+	.woocommerce ul.products { justify-content: space-between; }
+	.woocommerce ul.products li.product .woocommerce-loop-product__title,
+	.woocommerce ul.products li.product .woocommerce-loop-category__title { padding: 0 .8rem; font-size: 1rem; }
+	.woocommerce ul.products li.product .price,
+	.woocommerce ul.products li.product .star-rating { margin-left: .8rem; margin-right: .8rem; }
+	.woocommerce ul.products li.product .button {
+		align-self: stretch;
+		max-width: none;
+		margin: auto .8rem 0;
+		padding: 10px 12px;
+		font-size: .85rem;
+		clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+	}
+}
+
+.woocommerce span.onsale {
+	top: .75rem;
+	left: .75rem;
+	right: auto;
+	min-width: 0;
+	min-height: 0;
+	margin: 0;
+	padding: .3em .75em;
+	border-radius: 0;
+	background: var(--pen-accent);
+	color: var(--pen-accent-ink);
+	font-family: var(--pen-font-head);
+	font-size: .75rem;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: .12em;
+	text-transform: uppercase;
+}
+.woocommerce ul.products li.product .onsale { top: .75rem; left: .75rem; right: auto; margin: 0; }
+.woocommerce .price del { color: var(--pen-ink-soft); opacity: .8; }
+.woocommerce .price ins { text-decoration: none; }
+.woocommerce .star-rating span::before,
+.woocommerce p.stars a { color: var(--pen-accent); }
+
+/* ==========================================================================
+   Single product
+   ========================================================================== */
+.woocommerce div.product .product_title { font-size: clamp(1.8rem, 3.5vw, 2.6rem); }
+.woocommerce div.product p.price,
+.woocommerce div.product span.price { color: var(--pen-ink); font-size: 1.5rem; font-weight: 700; }
+.woocommerce div.product .woocommerce-product-details__short-description { color: var(--pen-ink-soft); }
+.woocommerce div.product form.cart { margin: 1.5rem 0; }
+.woocommerce .quantity .qty {
+	width: 4.5em;
+	padding: .8rem .4rem;
+	border: 1px solid var(--pen-border);
+	background: var(--pen-surface);
+	color: var(--pen-ink);
+	font: inherit;
+}
+.woocommerce div.product .product_meta { font-size: .88rem; color: var(--pen-ink-soft); }
+.woocommerce div.product .product_meta a { color: var(--pen-olive); }
+
+.woocommerce div.product .woocommerce-tabs ul.tabs { padding: 0; }
+.woocommerce div.product .woocommerce-tabs ul.tabs::before { border-bottom-color: var(--pen-border); }
+.woocommerce div.product .woocommerce-tabs ul.tabs li {
+	border-color: var(--pen-border);
+	border-radius: 0;
+	background: var(--pen-surface-alt);
+}
+.woocommerce div.product .woocommerce-tabs ul.tabs li::before,
+.woocommerce div.product .woocommerce-tabs ul.tabs li::after { display: none; }
+.woocommerce div.product .woocommerce-tabs ul.tabs li a {
+	font-family: var(--pen-font-head);
+	font-weight: 500;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+	color: var(--pen-ink-soft);
+}
+.woocommerce div.product .woocommerce-tabs ul.tabs li.active { background: var(--pen-bg); border-bottom-color: var(--pen-bg); }
+.woocommerce div.product .woocommerce-tabs ul.tabs li.active a { color: var(--pen-ink); }
+.woocommerce div.product .woocommerce-tabs .panel { max-width: 780px; }
+
+.woocommerce .related > h2,
+.woocommerce .upsells > h2,
+.woocommerce .cross-sells > h2 { font-size: 1.5rem; }
+
+/* ==========================================================================
+   Notices
+   ========================================================================== */
+.woocommerce-message,
+.woocommerce-info,
+.woocommerce-error,
+.woocommerce-noreviews,
+p.no-comments {
+	border-top: 3px solid var(--pen-olive);
+	background: var(--pen-surface-alt);
+	color: var(--pen-ink);
+}
+.woocommerce-message::before,
+.woocommerce-info::before { color: var(--pen-olive); }
+.woocommerce-error { border-top-color: var(--pen-danger); }
+.woocommerce-error::before { color: var(--pen-danger); }
+.woocommerce-message .button,
+.woocommerce-info .button { margin-left: 1rem; }
+
+/* ==========================================================================
+   Forms (classic checkout, account, reviews) — not on FunnelKit steps
+   ========================================================================== */
+body:not(.pen-funnel-step) .woocommerce form .form-row label { font-weight: 600; font-size: .92rem; }
+body:not(.pen-funnel-step) .woocommerce form .form-row :is(input.input-text, textarea, select),
+body:not(.pen-funnel-step) .woocommerce #review_form textarea,
+body:not(.pen-funnel-step) .select2-container--default .select2-selection--single {
+	padding: .7rem .9rem;
+	border: 1px solid var(--pen-border);
+	border-radius: 0;
+	background: var(--pen-surface);
+	color: var(--pen-ink);
+	font: inherit;
+	line-height: 1.4;
+}
+body:not(.pen-funnel-step) .select2-container--default .select2-selection--single { height: auto; }
+body:not(.pen-funnel-step) .woocommerce form .form-row :is(input.input-text, textarea, select):focus {
+	border-color: var(--pen-accent);
+	outline: 2px solid var(--pen-accent);
+	outline-offset: 0;
+}
+body:not(.pen-funnel-step) .woocommerce form.checkout_coupon,
+body:not(.pen-funnel-step) .woocommerce form.login,
+body:not(.pen-funnel-step) .woocommerce form.register {
+	border: 1px solid var(--pen-border);
+	border-radius: 0;
+	background: var(--pen-surface);
+}
+
+/* ==========================================================================
+   Tables: cart, order review, account orders
+   ========================================================================== */
+.woocommerce table.shop_table {
+	border: 1px solid var(--pen-border);
+	border-radius: 0;
+	background: var(--pen-surface);
+	border-collapse: collapse;
+}
+.woocommerce table.shop_table th {
+	font-family: var(--pen-font-head);
+	font-weight: 500;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+	font-size: .85rem;
+}
+.woocommerce table.shop_table :is(th, td) { border-color: var(--pen-border); }
+.woocommerce .cart-collaterals .cart_totals h2,
+.woocommerce-checkout #order_review_heading { font-size: 1.4rem; }
+.woocommerce-checkout #payment {
+	border-radius: 0;
+	background: var(--pen-surface-alt);
+}
+.woocommerce-checkout #payment div.payment_box { background: var(--pen-surface); color: var(--pen-ink); }
+.woocommerce-checkout #payment div.payment_box::before { border-bottom-color: var(--pen-surface); }
+
+/* ==========================================================================
+   My Account
+   ========================================================================== */
+.woocommerce-account .woocommerce-MyAccount-navigation ul {
+	margin: 0 0 2rem;
+	padding: 0;
+	list-style: none;
+	border: 1px solid var(--pen-border);
+	background: var(--pen-surface);
+}
+.woocommerce-account .woocommerce-MyAccount-navigation li { border-bottom: 1px solid var(--pen-border); }
+.woocommerce-account .woocommerce-MyAccount-navigation li:last-child { border-bottom: 0; }
+.woocommerce-account .woocommerce-MyAccount-navigation a {
+	display: block;
+	padding: .75rem 1rem;
+	color: var(--pen-ink);
+	text-decoration: none;
+	font-weight: 600;
+}
+.woocommerce-account .woocommerce-MyAccount-navigation a:hover { color: var(--pen-accent); }
+.woocommerce-account .woocommerce-MyAccount-navigation li.is-active a {
+	background: var(--pen-olive);
+	color: #fff;
+}
+
+/* ==========================================================================
+   Pagination
+   ========================================================================== */
+.woocommerce nav.woocommerce-pagination ul { border: 0; display: flex; justify-content: center; gap: .4rem; }
+.woocommerce nav.woocommerce-pagination ul li { border: 0; }
+.woocommerce nav.woocommerce-pagination ul li :is(a, span) {
+	display: grid;
+	place-items: center;
+	min-width: 44px;
+	height: 44px;
+	padding: 0 .75rem;
+	border: 1px solid var(--pen-border);
+	background: var(--pen-surface);
+	color: var(--pen-ink);
+	font-weight: 600;
+}
+.woocommerce nav.woocommerce-pagination ul li :is(a:hover, span.current) {
+	background: var(--pen-olive);
+	border-color: var(--pen-olive);
+	color: #fff;
+}
+
+/* ==========================================================================
+   Cart & Checkout blocks (WooCommerce's default cart and checkout pages)
+   ========================================================================== */
+.wc-block-components-button:not(.is-link) {
+	border-radius: 0;
+	background: var(--pen-accent);
+	color: var(--pen-accent-ink);
+	font-family: var(--pen-font-head);
+	font-weight: 500;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+}
+.wc-block-components-button:not(.is-link):hover { background: var(--pen-accent-hover); color: var(--pen-accent-ink); }
+body:not(.pen-funnel-step) .wc-block-components-text-input :is(input, textarea),
+body:not(.pen-funnel-step) .wc-block-components-combobox .components-combobox-control input,
+body:not(.pen-funnel-step) .wc-blocks-components-select .wc-blocks-components-select__select {
+	border-color: var(--pen-border);
+	border-radius: 0;
+	background: var(--pen-surface);
+	color: var(--pen-ink);
+}
+.wc-block-components-totals-item__value,
+.wc-block-components-product-price { color: var(--pen-ink); }
+.wc-block-components-sale-badge { border-radius: 0; background: var(--pen-accent); color: var(--pen-accent-ink); border-color: var(--pen-accent); }
+
+/* ==========================================================================
+   Store pages
+   ========================================================================== */
+.pen-store .pen-page-hero { padding-block: clamp(32px, 5vw, 64px); }
