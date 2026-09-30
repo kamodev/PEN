@@ -1,0 +1,5 @@
+# Left out of the release zip (bin/build-release.sh uses git archive).
+/bin            export-ignore
+/README.md      export-ignore
+/.gitattributes export-ignore
+/.gitignore     export-ignore
