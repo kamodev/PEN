@@ -84,6 +84,65 @@ function pen_layout_fields() {
 }
 
 /**
+ * Plugin integration fields: key => choices, default.
+ *
+ * These are per-site and never locked by the network.
+ *
+ * @return array
+ */
+function pen_integration_fields() {
+	return apply_filters(
+		'pen_integration_fields',
+		array(
+			'wc_checkout_header'       => array(
+				array(
+					'minimal' => __( 'Minimal header (logo only, distraction-free)', 'pen' ),
+					'full'    => __( 'Full site header', 'pen' ),
+				),
+				'minimal',
+			),
+			'funnel_header'            => array(
+				array(
+					'minimal' => __( 'Minimal header (logo only, distraction-free)', 'pen' ),
+					'full'    => __( 'Full site header', 'pen' ),
+				),
+				'minimal',
+			),
+			'elementor_default_editor' => array(
+				array(
+					'elementor' => __( 'Elementor', 'pen' ),
+					'block'     => __( 'Block editor', 'pen' ),
+				),
+				'elementor',
+			),
+			'elementor_sync'           => array(
+				array(
+					'on'  => __( 'Keep Elementor global colors and fonts matched to the theme', 'pen' ),
+					'off' => __( 'Manage Elementor global colors and fonts separately', 'pen' ),
+				),
+				'on',
+			),
+			'amelia_match'             => array(
+				array(
+					'on'  => __( 'Style Amelia booking forms with the theme colors and fonts', 'pen' ),
+					'off' => __( 'Use Amelia\'s own colors', 'pen' ),
+				),
+				'on',
+			),
+		)
+	);
+}
+
+/**
+ * All select-style fields (layout and integrations).
+ *
+ * @return array
+ */
+function pen_choice_fields() {
+	return array_merge( pen_layout_fields(), pen_integration_fields() );
+}
+
+/**
  * Theme defaults for every setting.
  *
  * @return array
@@ -93,7 +152,7 @@ function pen_setting_defaults() {
 	foreach ( pen_color_fields() as $key => $field ) {
 		$defaults[ $key ] = $field[1];
 	}
-	foreach ( pen_layout_fields() as $key => $field ) {
+	foreach ( pen_choice_fields() as $key => $field ) {
 		$defaults[ $key ] = $field[1];
 	}
 	return apply_filters( 'pen_setting_defaults', $defaults );
@@ -103,10 +162,13 @@ function pen_setting_defaults() {
  * Settings group for a key.
  *
  * @param string $key Setting key.
- * @return string 'colors' or 'layout'.
+ * @return string 'colors', 'layout' or 'integrations'.
  */
 function pen_setting_group( $key ) {
-	return 0 === strpos( $key, 'color_' ) ? 'colors' : 'layout';
+	if ( 0 === strpos( $key, 'color_' ) ) {
+		return 'colors';
+	}
+	return array_key_exists( $key, pen_integration_fields() ) ? 'integrations' : 'layout';
 }
 
 /**
@@ -236,7 +298,7 @@ function pen_sanitize_settings( $input, $existing, $with_locks = false ) {
 		}
 	}
 
-	foreach ( pen_layout_fields() as $key => $field ) {
+	foreach ( pen_choice_fields() as $key => $field ) {
 		$value = array_key_exists( $key, $input ) ? $input[ $key ] : ( isset( $existing[ $key ] ) ? $existing[ $key ] : '' );
 		if ( array_key_exists( (string) $value, $field[0] ) ) {
 			$out[ $key ] = (string) $value;
@@ -255,12 +317,20 @@ function pen_sanitize_settings( $input, $existing, $with_locks = false ) {
 /**
  * Sanitize callback for the site option.
  *
+ * A Theme Settings tab posts only its own fields plus a "_tab" marker, so
+ * that save is merged into the stored values. Any other write (Customizer,
+ * WP-CLI, code) is taken as the complete value.
+ *
  * @param array $input Raw input.
  * @return array
  */
 function pen_sanitize_site_settings( $input ) {
-	$existing = get_option( 'pen_settings', array() );
-	return pen_sanitize_settings( $input, is_array( $existing ) ? $existing : array() );
+	if ( is_array( $input ) && isset( $input['_tab'] ) ) {
+		unset( $input['_tab'] );
+		$existing = get_option( 'pen_settings', array() );
+		return pen_sanitize_settings( $input, is_array( $existing ) ? $existing : array() );
+	}
+	return pen_sanitize_settings( $input, array() );
 }
 
 /**

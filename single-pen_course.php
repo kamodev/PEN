@@ -54,6 +54,15 @@ while ( have_posts() ) :
 					<?php endif; ?>
 				</div>
 
+				<?php
+				/**
+				 * After the class description (the Amelia integration adds its booking form here).
+				 *
+				 * @param array $c Class details.
+				 */
+				do_action( 'pen_course_after_content', $c );
+				?>
+
 				<?php if ( $c['instructors'] ) : ?>
 					<h2 style="margin-top:2.5rem"><?php esc_html_e( 'Your Instructors', 'pen' ); ?></h2>
 					<div class="pen-grid pen-grid--3">

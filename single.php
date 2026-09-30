@@ -9,6 +9,13 @@ get_header();
 
 while ( have_posts() ) :
 	the_post();
+
+	// Page-builder layouts and funnel steps render their own full-width content.
+	if ( pen_is_bare_content() ) {
+		get_template_part( 'template-parts/content', 'bare' );
+		continue;
+	}
+
 	?>
 	<header class="pen-page-hero">
 		<div class="pen-container">

@@ -1,13 +1,13 @@
 <?php
 /**
- * Home: featured gear (WooCommerce).
+ * Front page: featured gear grid.
+ *
+ * Uses WooCommerce's [products] shortcode, so product cards always come from
+ * WooCommerce's own current templates.
  *
  * @package PEN
  */
 
-if ( ! pen_mod( 'pen_shop_enable' ) || ! pen_has_woo() ) {
-	return;
-}
 ?>
 <section class="pen-section" id="gear">
 	<div class="pen-container">

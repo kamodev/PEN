@@ -290,6 +290,34 @@ $blocks['_multiwidget'] = 1;
 update_option( 'widget_block', $blocks );
 update_option( 'sidebars_widgets', $sidebars );
 
+// WooCommerce: store pages and a few demo products.
+if ( class_exists( 'WooCommerce' ) ) {
+	if ( class_exists( 'WC_Install' ) ) {
+		WC_Install::create_pages();
+	}
+	$products = array(
+		array( 'IFAK Trauma Kit', '89.00', '74.00', 'A compact individual first aid kit with tourniquet, pressure dressing and chest seals.' ),
+		array( 'Stop the Bleed Tourniquet', '32.00', '', 'The windlass tourniquet we train with in every Stop the Bleed class.' ),
+		array( '72-Hour Family Go-Bag', '149.00', '', 'Water, food, light, shelter and first aid for two people for three days.' ),
+		array( 'Handheld Emergency Radio', '59.00', '', 'Hand-crank and solar NOAA weather radio with phone charging.' ),
+	);
+	foreach ( $products as $p ) {
+		if ( get_posts( array( 'post_type' => 'product', 'title' => $p[0], 'post_status' => 'any', 'fields' => 'ids' ) ) ) {
+			continue;
+		}
+		$product = new WC_Product_Simple();
+		$product->set_name( $p[0] );
+		$product->set_status( 'publish' );
+		$product->set_regular_price( $p[1] );
+		if ( $p[2] ) {
+			$product->set_sale_price( $p[2] );
+		}
+		$product->set_short_description( $p[3] );
+		$product->set_description( $p[3] . ' Chosen and tested by our instructors.' );
+		$product->save();
+	}
+}
+
 // Demo newsletter action so the form renders (replace with your provider's URL).
 if ( ! get_theme_mod( 'pen_news_action' ) ) {
 	set_theme_mod( 'pen_news_action', home_url( '/?newsletter=demo' ) );

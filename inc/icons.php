@@ -43,6 +43,7 @@ function pen_get_icon( $name ) {
 		'x'         => '<path d="M4 4l16 16M20 4L4 20"/>',
 		'rumble'    => '<path d="M8 6l9 6-9 6z"/><circle cx="12" cy="12" r="10"/>',
 		'podcast'   => '<circle cx="12" cy="10" r="3"/><path d="M12 13v8M6.3 15.5A8 8 0 1 1 17.7 15.5"/>',
+		'lock'      => '<rect x="5" y="11" width="14" height="10" rx="1"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
 		'email'     => '<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 7l9 6 9-6"/>',
 	);
 

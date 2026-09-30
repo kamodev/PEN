@@ -88,3 +88,11 @@
 .comment-form input[type="text"], .comment-form input[type="email"], .comment-form input[type="url"], .comment-form textarea {
 	width: 100%; padding: .7rem .9rem; font: inherit; border: 1px solid var(--pen-border); border-radius: var(--pen-radius);
 }
+
+/* Full-width content from page builders and funnel steps (no banner or container). */
+.pen-bare { display: flow-root; }
+.pen-bare__content { max-width: 960px; margin: 0 auto; }
+
+/* Booking forms (Amelia) on class and instructor pages. */
+.pen-booking { margin-top: 2.5rem; scroll-margin-top: 110px; }
+.pen-booking__form { margin-top: 1rem; }

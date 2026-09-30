@@ -1,0 +1,28 @@
+/**
+ * Elementor: button shape and page-builder layouts. Loaded only when
+ * Elementor is active (inc/integrations/elementor.php).
+ *
+ * Colors and fonts come from the Elementor global kit, which the theme keeps
+ * matched to Theme Settings. Per-widget settings in Elementor still win.
+ *
+ * @package PEN
+ */
+
+/* Knife-edge buttons, like the theme's own. Widget-level styles override these. */
+.elementor-widget-button .elementor-button {
+	border-radius: 0;
+	clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+	transition: background-color .2s, color .2s, transform .2s;
+}
+.elementor-widget-button .elementor-button:hover { transform: translateY(-2px); }
+.elementor-widget-button .elementor-button.elementor-size-xs,
+.elementor-widget-button .elementor-button.elementor-size-sm {
+	clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+}
+
+/* Elementor pages run edge to edge under the theme header. */
+.pen-bare > .elementor { width: 100%; }
+
+@media (prefers-reduced-motion: reduce) {
+	.elementor-widget-button .elementor-button:hover { transform: none; }
+}

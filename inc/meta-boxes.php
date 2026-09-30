@@ -29,6 +29,20 @@ function pen_levels() {
  * @return array
  */
 function pen_meta_fields() {
+	/**
+	 * Filter the meta box fields per post type.
+	 *
+	 * @param array $fields Field definitions.
+	 */
+	return apply_filters( 'pen_meta_fields', pen_default_meta_fields() );
+}
+
+/**
+ * Built-in meta box fields.
+ *
+ * @return array
+ */
+function pen_default_meta_fields() {
 	return array(
 		'pen_course'      => array(
 			'title'  => __( 'Class Details', 'pen' ),

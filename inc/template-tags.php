@@ -19,11 +19,33 @@ function pen_has_woo() {
 }
 
 /**
- * Header cart count badge.
+ * Whether the current singular view should output its content without the
+ * theme's page banner, container or sidebar (page-builder layouts, funnel steps).
+ *
+ * @return bool
  */
-function pen_cart_count() {
-	$count = ( pen_has_woo() && WC()->cart ) ? WC()->cart->get_cart_contents_count() : 0;
-	printf( '<span class="pen-cart-count"%s>%d</span>', $count ? '' : ' hidden', (int) $count );
+function pen_is_bare_content() {
+	/**
+	 * Filter whether to render bare content.
+	 *
+	 * @param bool $bare Default false.
+	 */
+	return is_singular() && (bool) apply_filters( 'pen_bare_content', false );
+}
+
+/**
+ * Whether to use the minimal, distraction-free header and footer
+ * (logo only; used for checkout and funnel steps).
+ *
+ * @return bool
+ */
+function pen_is_minimal_header() {
+	/**
+	 * Filter whether to use the minimal header and footer.
+	 *
+	 * @param bool $minimal Default false.
+	 */
+	return (bool) apply_filters( 'pen_minimal_header', false );
 }
 
 /**
@@ -41,7 +63,7 @@ function pen_course( $post_id = null ) {
 	$seats    = $get( '_pen_seats_left' );
 	$register = $get( '_pen_register_url' );
 
-	return array(
+	$data = array(
 		'start'       => $get( '_pen_start_date' ),
 		'end'         => $get( '_pen_end_date' ),
 		'time'        => $get( '_pen_time' ),
@@ -56,6 +78,14 @@ function pen_course( $post_id = null ) {
 		'prereqs'     => $get( '_pen_prereqs' ),
 		'instructors' => array_filter( array_map( 'absint', (array) $get( '_pen_instructors' ) ) ),
 	);
+
+	/**
+	 * Filter class details (for example to point Register at a booking form).
+	 *
+	 * @param array $data    Class details.
+	 * @param int   $post_id Class post ID.
+	 */
+	return apply_filters( 'pen_course_data', $data, $post_id );
 }
 
 /**
@@ -144,7 +174,8 @@ function pen_posted_on() {
  * Simple breadcrumbs.
  */
 function pen_breadcrumbs() {
-	if ( is_front_page() ) {
+	// No way-out links on the front page or on distraction-free checkout and funnel steps.
+	if ( is_front_page() || pen_is_minimal_header() ) {
 		return;
 	}
 	$crumbs = array( '<a href="' . esc_url( home_url( '/' ) ) . '">' . esc_html__( 'Home', 'pen' ) . '</a>' );

@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'PEN_VERSION', '1.1.0' );
+define( 'PEN_VERSION', '1.2.0' );
 define( 'PEN_DIR', get_template_directory() );
 define( 'PEN_URI', get_template_directory_uri() );
 
@@ -20,6 +20,11 @@ require PEN_DIR . '/inc/settings.php';
 require PEN_DIR . '/inc/layout.php';
 require PEN_DIR . '/inc/customizer.php';
 require PEN_DIR . '/inc/template-tags.php';
+
+// Plugin integrations. Each file checks that its plugin is active.
+require PEN_DIR . '/inc/woocommerce/woocommerce.php';
+require PEN_DIR . '/inc/integrations/elementor.php';
+require PEN_DIR . '/inc/integrations/amelia.php';
 
 if ( is_admin() ) {
 	require PEN_DIR . '/inc/admin-settings.php';
@@ -52,12 +57,6 @@ function pen_setup() {
 			'flex-width'  => true,
 		)
 	);
-
-	// WooCommerce gear shop support.
-	add_theme_support( 'woocommerce' );
-	add_theme_support( 'wc-product-gallery-zoom' );
-	add_theme_support( 'wc-product-gallery-lightbox' );
-	add_theme_support( 'wc-product-gallery-slider' );
 
 	add_image_size( 'pen-card', 720, 450, true );
 	add_image_size( 'pen-square', 600, 600, true );
@@ -238,36 +237,3 @@ add_filter(
 		return '&hellip;';
 	}
 );
-
-/**
- * Keep the WooCommerce cart count in the header fresh after AJAX add-to-cart.
- *
- * @param array $fragments Cart fragments.
- * @return array
- */
-function pen_cart_fragment( $fragments ) {
-	ob_start();
-	pen_cart_count();
-	$fragments['.pen-cart-count'] = ob_get_clean();
-	return $fragments;
-}
-add_filter( 'woocommerce_add_to_cart_fragments', 'pen_cart_fragment' );
-
-/**
- * Wrap WooCommerce pages in the theme's container.
- */
-remove_action( 'woocommerce_before_main_content', 'woocommerce_output_content_wrapper', 10 );
-remove_action( 'woocommerce_after_main_content', 'woocommerce_output_content_wrapper_end', 10 );
-add_action(
-	'woocommerce_before_main_content',
-	function () {
-		echo '<div class="pen-section"><div class="pen-container">';
-	}
-);
-add_action(
-	'woocommerce_after_main_content',
-	function () {
-		echo '</div></div>';
-	}
-);
-remove_action( 'woocommerce_sidebar', 'woocommerce_get_sidebar', 10 );

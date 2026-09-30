@@ -6,6 +6,7 @@
 #
 #   bin/test-server.sh                # single site on :8080
 #   MULTISITE=1 bin/test-server.sh    # subdirectory network, second site at /second/
+#   WITH_WOOCOMMERCE=1 bin/test-server.sh  # also install WooCommerce with demo products
 #   PORT=9000 bin/test-server.sh      # different port
 #   WP_DIR=/tmp/pen-wp bin/test-server.sh
 #
@@ -21,8 +22,10 @@ else
 fi
 PORT="${PORT:-8080}"
 URL="http://localhost:$PORT"
-WP_VERSION="${WP_VERSION:-6.8.3}"
+WP_VERSION="${WP_VERSION:-7.1.2}"
 SQLITE_VERSION="${SQLITE_VERSION:-v2.2.3}"
+WITH_WOOCOMMERCE="${WITH_WOOCOMMERCE:-0}"
+WC_VERSION="${WC_VERSION:-11.1.2}"
 
 WP_CLI="$WP_DIR/wp-cli.phar"
 wp() { php "$WP_CLI" --path="$WP_DIR/wp" --allow-root "$@"; }
@@ -43,6 +46,13 @@ if [ ! -f "$WP_DIR/wp/wp-config.php" ]; then
 	git clone -q --depth 1 --branch "$SQLITE_VERSION" https://github.com/WordPress/sqlite-database-integration.git \
 		"$WP_DIR/wp/wp-content/plugins/sqlite-database-integration"
 	curl -sSL -o "$WP_CLI" https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
+
+	if [ "$WITH_WOOCOMMERCE" = "1" ]; then
+		echo "Downloading WooCommerce $WC_VERSION ..."
+		curl -sSL -o "$WP_DIR/woocommerce.zip" "https://github.com/woocommerce/woocommerce/releases/download/$WC_VERSION/woocommerce.zip"
+		unzip -q -o "$WP_DIR/woocommerce.zip" -d "$WP_DIR/wp/wp-content/plugins/"
+		rm -f "$WP_DIR/woocommerce.zip"
+	fi
 
 	SQLITE_DIR="$WP_DIR/wp/wp-content/plugins/sqlite-database-integration"
 	sed -e "s#{SQLITE_IMPLEMENTATION_FOLDER_PATH}#$SQLITE_DIR#" \
@@ -84,12 +94,20 @@ define( 'SITE_ID_CURRENT_SITE', 1 );
 define( 'BLOG_ID_CURRENT_SITE', 1 );
 EOF
 		wp theme enable preparedness-network --network
+		[ "$WITH_WOOCOMMERCE" = "1" ] && wp plugin activate woocommerce --network
 		wp site create --slug=second --title="PEN Second Site" --email=admin@example.com
 		setup_site "$URL/"
 		setup_site "$URL/second/"
+		if [ "$WITH_WOOCOMMERCE" = "1" ]; then
+			wp --url="$URL/" option update woocommerce_coming_soon no
+			wp --url="$URL/second/" option update woocommerce_coming_soon no
+		fi
 	else
 		wp core install --url="$URL" --title="Preparedness Education Network" \
 			--admin_user=admin --admin_password=admin --admin_email=admin@example.com --skip-email
+		[ "$WITH_WOOCOMMERCE" = "1" ] && wp plugin activate woocommerce
+		# New stores start in WooCommerce's "Coming soon" mode; open the test store.
+		[ "$WITH_WOOCOMMERCE" = "1" ] && wp option update woocommerce_coming_soon no
 		setup_site "$URL"
 	fi
 fi
