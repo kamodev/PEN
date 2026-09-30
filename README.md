@@ -125,6 +125,21 @@ Each class has these fields: start date, end date, time, duration, location, pri
 3. Set a static front page under **Settings → Reading**. The front-page template renders every section automatically.
 4. Assign a menu to **Primary Menu**.
 
+## Release zip
+
+```bash
+bin/build-release.sh    # → dist/preparedness-network-<version>.zip (+ .sha256)
+```
+
+This builds the zip you upload under **Appearance → Themes → Add New → Upload** (or **Network Admin → Themes → Add New** on multisite). It packages the committed files with `git archive` into a `preparedness-network/` folder, and leaves out `bin/`, `README.md` and Git files (see `.gitattributes`). The build stops if:
+
+- the `Version:` in `style.css` doesn't match `PEN_VERSION` in `functions.php`,
+- any PHP file fails `php -l`,
+- a WooCommerce template override folder exists, or
+- there are uncommitted changes (`--allow-dirty` builds from the last commit anyway).
+
+To release a new version, bump both version numbers, commit, then run the script.
+
 ## Local test server
 
 ```bash
