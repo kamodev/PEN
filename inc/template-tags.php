@@ -244,13 +244,24 @@ function pen_social_links() {
  * Newsletter form (or button fallback).
  */
 function pen_newsletter_form() {
+	/**
+	 * Replace the newsletter form (the MailPoet integration uses this).
+	 *
+	 * @param string|null $html Form markup, or null for the theme's default form.
+	 */
+	$html = apply_filters( 'pen_newsletter_form_html', null );
+	if ( null !== $html ) {
+		echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from escaped parts or plugin shortcode output.
+		return;
+	}
+
 	$action = pen_mod( 'pen_news_action' );
 	$field  = pen_mod( 'pen_news_field' );
 	$button = pen_mod( 'pen_news_button' );
 
 	if ( ! $action ) {
 		if ( current_user_can( 'edit_theme_options' ) ) {
-			echo '<p class="pen-newsletter__note">' . esc_html__( 'Admins: add your email provider\'s form URL under Customize → PEN Theme Options → Newsletter.', 'pen' ) . '</p>';
+			echo '<p class="pen-newsletter__note">' . esc_html__( 'Admins: choose a MailPoet list under Appearance → Theme Settings → Integrations, or add your email provider\'s form URL under Customize → PEN Theme Options → Newsletter.', 'pen' ) . '</p>';
 		}
 		return;
 	}

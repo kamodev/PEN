@@ -25,12 +25,12 @@ A classic WordPress theme for **preparednesseducation.network**. It is built aro
 | Site colors (13 colors, presets, contrast checks, live preview) | Appearance → Theme Settings → Colors, or Customize → PEN Theme Options → Colors |
 | Sidebars for posts, pages and archives (on/off, left/right, per-post override) | Appearance → Theme Settings → Layout & Sidebars |
 | Multisite network defaults and locks | Network Admin → Themes → PEN Theme Defaults |
-| WooCommerce, FunnelKit, Elementor and Amelia integrations | Appearance → Theme Settings → Integrations |
+| WooCommerce, FunnelKit, Elementor, Amelia and MailPoet integrations | Appearance → Theme Settings → Integrations |
 | Distraction-free (logo-only) header and footer on checkout and funnel steps | Theme Settings → Integrations |
 
 ## Stylesheets
 
-`style.css` holds only the theme header. The styles are split by area in `assets/css/` and load in this order: `tokens`, `base`, `buttons`, `header`, `hero`, `cards`, `schedule`, `sections`, `content`, `footer`, `wordpress`. Three more load only when their plugin is active: `woocommerce`, `elementor` and `amelia` (Amelia's only while its theme matching is on). Admin screen styles are in `assets/css/admin/`. Colors from Theme Settings are printed as CSS custom properties after `tokens.css`, so they override its defaults. To add or reorder parts, filter `pen_style_parts`.
+`style.css` holds only the theme header. The styles are split by area in `assets/css/` and load in this order: `tokens`, `base`, `buttons`, `header`, `hero`, `cards`, `schedule`, `sections`, `content`, `footer`, `wordpress`. More load only when their plugin is active: `woocommerce`, `elementor`, `amelia` and `mailpoet` (Amelia's and MailPoet's only while their theme matching is on). Admin screen styles are in `assets/css/admin/`. Colors from Theme Settings are printed as CSS custom properties after `tokens.css`, so they override its defaults. To add or reorder parts, filter `pen_style_parts`.
 
 ## Theme Settings
 
@@ -90,6 +90,27 @@ FunnelKit's checkout designs keep their own form styles. The step post types are
 - **Shortcodes.** The newer Amelia 2.x shortcodes are used when available (`ameliaeventslistbooking`, `ameliastepbooking`), with fallbacks to the older ones (`ameliaevents`, `ameliabooking`).
 - **Payments.** Amelia can take payment through WooCommerce, which sends bookings through the WooCommerce checkout (and FunnelKit's, if you use it).
 
+### MailPoet (`inc/integrations/mailpoet.php`)
+
+The homepage newsletter band ("Get the Free Family Preparedness Checklist") sends sign-ups to MailPoet. Choose one of two options under **Theme Settings → Integrations → MailPoet**:
+
+- **MailPoet list:** the theme's own email form adds each sign-up to the chosen list through MailPoet's API.
+  - MailPoet's sign-up confirmation (double opt-in) and welcome emails apply as usual.
+  - After signing up, visitors see a matching message: "check your inbox to confirm", or "you're on the list" when confirmation is off.
+  - People already subscribed are simply added to the list.
+- **MailPoet form:** a form built in MailPoet → Forms replaces the theme's form. Use this for extra fields such as a first name. It overrides the list.
+
+With neither chosen, the band uses the Customizer's **Form action URL** (for Mailchimp, ConvertKit and similar).
+
+**Spam protection:** the theme form skips MailPoet's own CAPTCHA, so it has its own protection:
+
+- a hidden honeypot field that bots fill in and people don't,
+- a limit of 5 sign-ups per IP address every 10 minutes (change it with the `pen_mailpoet_rate_limit` filter; sites behind a proxy that hides visitor IPs share one limit).
+
+**If a confirmation email fails to send,** the visitor is still signed up and sees the success message, and the failure is written to the PHP error log. Check MailPoet → Settings → Send With if that happens.
+
+**Form style:** with the default style setting, MailPoet forms anywhere on the site use the theme's fields, fonts and knife-edge button (`assets/css/mailpoet.css`). This overrides the colors set in MailPoet's form editor. Turn it off to keep MailPoet's own styles. MailPoet sets rounded corners on some template fields in a way a theme can't override.
+
 ### Hooks for developers
 
 | Hook | Use |
@@ -104,6 +125,8 @@ FunnelKit's checkout designs keep their own form styles. The step post types are
 | `pen_meta_fields` (filter) | Add fields to the Class, Instructor and Testimonial boxes |
 | `pen_style_parts` (filter) | Add or reorder stylesheet parts |
 | `pen_funnel_post_types`, `pen_amelia_shortcodes` (filters) | Adjust the FunnelKit and Amelia integrations |
+| `pen_newsletter_form_html` (filter) | Replace the newsletter band's form |
+| `pen_mailpoet_rate_limit` (filter) | Sign-ups allowed per IP address every 10 minutes (default 5; 0 turns the limit off) |
 
 ## Multisite
 
@@ -148,4 +171,4 @@ MULTISITE=1 bin/test-server.sh  # multisite network with a second site at /secon
 WITH_WOOCOMMERCE=1 bin/test-server.sh  # also install WooCommerce with demo products
 ```
 
-This script installs WordPress 7.1 with SQLite next to the repo (`../pen-test-site`), links the theme, loads demo content from `bin/seed-demo.php` and starts PHP's built-in server. You need `php` with `pdo_sqlite`, `git` and `curl`. With `MULTISITE=1`, the script sets up a subdirectory network with a second site at `/second/`. The network gets its own folder, `../pen-test-network`. `WITH_WOOCOMMERCE=1` downloads WooCommerce from its GitHub releases. WooCommerce doesn't officially support SQLite, so its background tasks may log database errors on this test server; a real site on MySQL won't have them.
+This script installs WordPress 7.1 with SQLite next to the repo (`../pen-test-site`), links the theme, loads demo content from `bin/seed-demo.php` and starts PHP's built-in server. You need `php` with `pdo_sqlite`, `git` and `curl`. With `MULTISITE=1`, the script sets up a subdirectory network with a second site at `/second/`. The network gets its own folder, `../pen-test-network`. `WITH_WOOCOMMERCE=1` downloads WooCommerce from its GitHub releases. WooCommerce doesn't officially support SQLite, so its background tasks may log database errors on this test server; a real site on MySQL won't have them. MailPoet doesn't run on SQLite at all, so test it on a MySQL/MariaDB site.

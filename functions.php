@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'PEN_VERSION', '1.2.0' );
+define( 'PEN_VERSION', '1.3.0' );
 define( 'PEN_DIR', get_template_directory() );
 define( 'PEN_URI', get_template_directory_uri() );
 
@@ -25,6 +25,7 @@ require PEN_DIR . '/inc/template-tags.php';
 require PEN_DIR . '/inc/woocommerce/woocommerce.php';
 require PEN_DIR . '/inc/integrations/elementor.php';
 require PEN_DIR . '/inc/integrations/amelia.php';
+require PEN_DIR . '/inc/integrations/mailpoet.php';
 
 if ( is_admin() ) {
 	require PEN_DIR . '/inc/admin-settings.php';

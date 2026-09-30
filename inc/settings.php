@@ -129,6 +129,29 @@ function pen_integration_fields() {
 				),
 				'on',
 			),
+			'mailpoet_match'           => array(
+				array(
+					'on'  => __( 'Style MailPoet forms with the theme colors, fonts and buttons', 'pen' ),
+					'off' => __( 'Use MailPoet\'s own form styles', 'pen' ),
+				),
+				'on',
+			),
+		)
+	);
+}
+
+/**
+ * Plugin integration ID fields (for example a MailPoet list): key => label.
+ * An empty value means "none chosen".
+ *
+ * @return array
+ */
+function pen_id_fields() {
+	return apply_filters(
+		'pen_id_fields',
+		array(
+			'mailpoet_list' => __( 'MailPoet list', 'pen' ),
+			'mailpoet_form' => __( 'MailPoet form', 'pen' ),
 		)
 	);
 }
@@ -155,6 +178,9 @@ function pen_setting_defaults() {
 	foreach ( pen_choice_fields() as $key => $field ) {
 		$defaults[ $key ] = $field[1];
 	}
+	foreach ( pen_id_fields() as $key => $label ) {
+		$defaults[ $key ] = '';
+	}
 	return apply_filters( 'pen_setting_defaults', $defaults );
 }
 
@@ -168,7 +194,10 @@ function pen_setting_group( $key ) {
 	if ( 0 === strpos( $key, 'color_' ) ) {
 		return 'colors';
 	}
-	return array_key_exists( $key, pen_integration_fields() ) ? 'integrations' : 'layout';
+	if ( array_key_exists( $key, pen_integration_fields() ) || array_key_exists( $key, pen_id_fields() ) ) {
+		return 'integrations';
+	}
+	return 'layout';
 }
 
 /**
@@ -302,6 +331,13 @@ function pen_sanitize_settings( $input, $existing, $with_locks = false ) {
 		$value = array_key_exists( $key, $input ) ? $input[ $key ] : ( isset( $existing[ $key ] ) ? $existing[ $key ] : '' );
 		if ( array_key_exists( (string) $value, $field[0] ) ) {
 			$out[ $key ] = (string) $value;
+		}
+	}
+
+	foreach ( pen_id_fields() as $key => $label ) {
+		$value = array_key_exists( $key, $input ) ? $input[ $key ] : ( isset( $existing[ $key ] ) ? $existing[ $key ] : '' );
+		if ( absint( $value ) > 0 ) {
+			$out[ $key ] = (string) absint( $value );
 		}
 	}
 
