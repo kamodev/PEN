@@ -1,7 +1,8 @@
 <?php
 /**
  * Customizer settings: announcement bar, header CTA, hero, stats, tracks,
- * mission, newsletter, social links, footer and brand colors.
+ * mission, newsletter, social links and footer. Colors live in Theme Settings
+ * (inc/settings.php) and are also editable here with live preview.
  *
  * @package PEN
  */
@@ -17,10 +18,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function pen_defaults() {
 	$defaults = array(
-		'pen_accent_color'       => '#e0621b',
-		'pen_olive_color'        => '#4b5320',
-		'pen_dark_color'         => '#16181a',
-
 		'pen_announce_enable'    => true,
 		'pen_announce_text'      => __( 'New Stop the Bleed & Family Preparedness classes added — seats are limited.', 'pen' ),
 		'pen_announce_link'      => '/classes/',
@@ -235,7 +232,7 @@ function pen_customize_register( $wp_customize ) {
 	);
 
 	$sections = array(
-		'pen_brand'    => __( 'Brand Colors', 'pen' ),
+		'pen_brand'    => __( 'Colors', 'pen' ),
 		'pen_announce' => __( 'Announcement Bar', 'pen' ),
 		'pen_header'   => __( 'Header', 'pen' ),
 		'pen_hero'     => __( 'Home: Hero', 'pen' ),
@@ -254,9 +251,39 @@ function pen_customize_register( $wp_customize ) {
 
 	$link_help = array( 'description' => __( 'Relative ("/classes/"), absolute, or an anchor ("#newsletter").', 'pen' ) );
 
-	$add( 'pen_accent_color', 'pen_brand', __( 'Accent (buttons, highlights)', 'pen' ), 'color' );
-	$add( 'pen_olive_color', 'pen_brand', __( 'Secondary (olive)', 'pen' ), 'color' );
-	$add( 'pen_dark_color', 'pen_brand', __( 'Dark (header, footer)', 'pen' ), 'color' );
+	// Colors are stored in the pen_settings option shared with Appearance → Theme Settings.
+	// When the network locks colors, the section has no controls, so it is hidden.
+	if ( ! pen_is_locked( 'colors' ) ) {
+		$wp_customize->get_section( 'pen_brand' )->description = sprintf(
+			/* translators: %s: settings page URL. */
+			__( 'Leave a color blank to use the default. Presets and readability checks are in <a href="%s">Appearance → Theme Settings</a>.', 'pen' ),
+			esc_url( admin_url( 'themes.php?page=pen-settings&tab=colors' ) )
+		);
+		foreach ( pen_color_fields() as $key => $field ) {
+			$id = 'pen_settings[' . $key . ']';
+			$wp_customize->add_setting(
+				$id,
+				array(
+					'type'              => 'option',
+					'default'           => '',
+					'sanitize_callback' => 'pen_sanitize_color_or_empty',
+				)
+			);
+			$wp_customize->add_control(
+				new WP_Customize_Color_Control(
+					$wp_customize,
+					'pen_color_' . $key,
+					array(
+						'label'       => $field[0],
+						'section'     => 'pen_brand',
+						'settings'    => $id,
+						/* translators: %s: color hex. */
+						'description' => sprintf( __( 'Default: %s', 'pen' ), pen_inherited_setting( $key ) ),
+					)
+				)
+			);
+		}
+	}
 
 	$add( 'pen_announce_enable', 'pen_announce', __( 'Show announcement bar', 'pen' ), 'checkbox' );
 	$add( 'pen_announce_text', 'pen_announce', __( 'Message', 'pen' ) );
@@ -334,24 +361,12 @@ function pen_customize_register( $wp_customize ) {
 add_action( 'customize_register', 'pen_customize_register' );
 
 /**
- * CSS variables from Customizer colors.
+ * Sanitize a color that may be blank (blank = use default).
  *
+ * @param string $value Value.
  * @return string
  */
-function pen_customizer_css() {
-	$accent = sanitize_hex_color( pen_mod( 'pen_accent_color' ) );
-	$olive  = sanitize_hex_color( pen_mod( 'pen_olive_color' ) );
-	$dark   = sanitize_hex_color( pen_mod( 'pen_dark_color' ) );
-
-	$css = ':root{';
-	if ( $accent ) {
-		$css .= '--pen-accent:' . $accent . ';';
-	}
-	if ( $olive ) {
-		$css .= '--pen-olive:' . $olive . ';';
-	}
-	if ( $dark ) {
-		$css .= '--pen-dark:' . $dark . ';';
-	}
-	return $css . '}';
+function pen_sanitize_color_or_empty( $value ) {
+	$value = sanitize_hex_color( trim( (string) $value ) );
+	return $value ? strtolower( $value ) : '';
 }

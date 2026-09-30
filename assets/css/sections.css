@@ -56,7 +56,12 @@
 	position: relative; isolation: isolate; text-align: center; color: #fff;
 	background: var(--pen-olive) center / cover no-repeat;
 }
-.pen-cta-band::before { content: ""; position: absolute; inset: 0; z-index: -1; background: rgba(34, 38, 18, .86); }
+.pen-cta-band::before {
+	content: ""; position: absolute; inset: 0; z-index: -1;
+	background: rgba(34, 38, 18, .86);
+	/* A darkened Secondary color from Theme Settings. */
+	background: color-mix(in srgb, color-mix(in srgb, var(--pen-olive) 55%, #000) 88%, transparent);
+}
 .pen-cta-band h2 { max-width: 760px; margin-left: auto; margin-right: auto; }
 .pen-cta-band p { max-width: 620px; margin: 0 auto 1.75rem; color: rgba(255,255,255,.85); }
 

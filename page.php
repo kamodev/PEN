@@ -12,7 +12,7 @@ while ( have_posts() ) :
 	pen_page_hero( get_the_title(), has_excerpt() ? get_the_excerpt() : '' );
 	?>
 	<div class="pen-section">
-		<div class="pen-container pen-layout pen-layout--full">
+		<div class="pen-container <?php echo esc_attr( pen_layout_class() ); ?>">
 			<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 				<div class="entry-content">
 					<?php
@@ -24,6 +24,7 @@ while ( have_posts() ) :
 					<div class="entry-content"><?php comments_template(); ?></div>
 				<?php endif; ?>
 			</article>
+			<?php get_sidebar(); ?>
 		</div>
 	</div>
 	<?php

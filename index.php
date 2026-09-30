@@ -25,10 +25,10 @@ if ( is_search() ) {
 pen_page_hero( $pen_title, $pen_sub );
 ?>
 <div class="pen-section">
-	<div class="pen-container pen-layout<?php echo is_active_sidebar( 'sidebar-1' ) ? '' : ' pen-layout--full'; ?>">
+	<div class="pen-container <?php echo esc_attr( pen_layout_class() ); ?>">
 		<div>
 			<?php if ( have_posts() ) : ?>
-				<div class="pen-grid pen-grid--<?php echo is_active_sidebar( 'sidebar-1' ) ? '2' : '3'; ?>">
+				<div class="pen-grid pen-grid--<?php echo pen_get_sidebar() ? '2' : '3'; ?>">
 					<?php
 					while ( have_posts() ) :
 						the_post();

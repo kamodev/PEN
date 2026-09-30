@@ -260,6 +260,36 @@ if ( ! $menu ) {
 	set_theme_mod( 'nav_menu_locations', $locations );
 }
 
+// Sidebar widgets (block widgets) for the post/blog and page sidebars.
+$sidebars = get_option( 'sidebars_widgets', array() );
+$blocks   = get_option( 'widget_block', array() );
+$next     = $blocks ? max( array_filter( array_keys( $blocks ), 'is_int' ) + array( 0 ) ) + 1 : 2;
+$widgets  = array(
+	'sidebar-1'    => array(
+		'<!-- wp:search {"label":"Search resources","buttonText":"Search"} /-->',
+		'<!-- wp:heading {"level":3} --><h3>Latest Guides</h3><!-- /wp:heading --><!-- wp:latest-posts {"postsToShow":4} /-->',
+		'<!-- wp:heading {"level":3} --><h3>Train With Us</h3><!-- /wp:heading --><!-- wp:paragraph --><p>Hands-on classes in emergency medicine, protection and family preparedness.</p><!-- /wp:paragraph --><!-- wp:buttons --><div class="wp-block-buttons"><!-- wp:button --><div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="' . esc_url( get_post_type_archive_link( 'pen_course' ) ) . '">View Classes</a></div><!-- /wp:button --></div><!-- /wp:buttons -->',
+	),
+	'sidebar-page' => array(
+		'<!-- wp:heading {"level":3} --><h3>Need Help?</h3><!-- /wp:heading --><!-- wp:paragraph --><p>Email info@preparednesseducation.network for private and group training.</p><!-- /wp:paragraph -->',
+		'<!-- wp:heading {"level":3} --><h3>Quick Links</h3><!-- /wp:heading --><!-- wp:page-list /-->',
+	),
+);
+foreach ( $widgets as $sidebar_id => $contents ) {
+	if ( ! empty( $sidebars[ $sidebar_id ] ) ) {
+		continue;
+	}
+	$sidebars[ $sidebar_id ] = array();
+	foreach ( $contents as $content ) {
+		$blocks[ $next ]           = array( 'content' => $content );
+		$sidebars[ $sidebar_id ][] = 'block-' . $next;
+		++$next;
+	}
+}
+$blocks['_multiwidget'] = 1;
+update_option( 'widget_block', $blocks );
+update_option( 'sidebars_widgets', $sidebars );
+
 // Demo newsletter action so the form renders (replace with your provider's URL).
 if ( ! get_theme_mod( 'pen_news_action' ) ) {
 	set_theme_mod( 'pen_news_action', home_url( '/?newsletter=demo' ) );
